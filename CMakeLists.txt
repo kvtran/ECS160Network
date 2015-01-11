@@ -10,6 +10,76 @@ set(SRC_LIST
     source/TerrainMap.cpp
     source/WallShape.cpp)
 
+set(ASSET_LIST
+    data/Mortar.dat
+    data/3DBurn.dat
+    data/2DCastleCannon.dat
+    data/3DExplosion.dat
+    data/3DCannon.dat
+    data/3DFloor.dat
+    data/SoundClips.dat
+    data/3DTerrain.dat
+    data/2DTerrain.dat
+    data/Bricks.dat
+    data/Digits.dat
+    data/2DWallFloor.dat
+    data/3DWall.dat
+    data/3DCannonball.dat
+    data/2DCastleSelect.dat
+    data/3DCannonPlume.dat
+    data/3DCastle.dat
+    data/FontKingthingsBlack.dat
+    data/FontKingthingsWhite.dat
+    data/Target.dat
+    maps/NorthSouth.map
+    pngs/Mortar.png
+    pngs/2DTerrain.png
+    pngs/FontKingthingsWhite.png
+    pngs/3DTerrain.png
+    pngs/Bricks.png
+    pngs/3DCannon.png
+    pngs/3DFloor.png
+    pngs/FontKingthingsBlack.png
+    pngs/2DCastleSelect.png
+    pngs/3DExplosions.png
+    pngs/2DCastleCannon.png
+    pngs/3DCannonball.png
+    pngs/Digits.png
+    pngs/Target.png
+    pngs/2DWalls.png
+    pngs/3DCastles.png
+    pngs/3DBurn.png
+    pngs/3DWallsAll.png
+    pngs/3DCannonPlume.png
+    sounds/waterexplosion0.wav
+    sounds/explosion0.wav
+    sounds/taps.mid
+    sounds/cannon0.wav
+    sounds/triumph.wav
+    sounds/ceasefire2.wav
+    sounds/menu.mid
+    sounds/tick.wav
+    sounds/rebuild.mid
+    sounds/place.mid
+    sounds/aim2.wav
+    sounds/fire2.wav
+    sounds/gust2.wav
+    sounds/groundexplosion0.wav
+    sounds/waterexplosion2.wav
+    sounds/tock.wav
+    sounds/waterexplosion1.wav
+    sounds/explosion2.wav
+    sounds/generalsoundfont.sf2
+    sounds/ready2.wav
+    sounds/win.mid
+    sounds/explosion3.wav
+    sounds/place.wav
+    sounds/explosion1.wav
+    sounds/waterexplosion3.wav
+    sounds/cannon1.wav
+    sounds/groundexplosion1.wav
+)
+
 find_package(GTK2)
 find_library(PORTAUDIO portaudio)
 find_library(FLUIDSYNTH fluidsynth)
@@ -23,3 +93,11 @@ target_link_libraries(${PROJECT_NAME} ${PORTAUDIO})
 target_link_libraries(${PROJECT_NAME} ${FLUIDSYNTH})
 target_link_libraries(${PROJECT_NAME} ${SNDFILE})
 
+foreach(ASSET ${ASSET_LIST})
+    add_custom_command(
+        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${ASSET}"
+        COMMAND cmake -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${ASSET}" "${CMAKE_CURRENT_BINARY_DIR}/${ASSET}"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${ASSET}")
+    list(APPEND ASSET_DEPENDENCIES "${CMAKE_CURRENT_BINARY_DIR}/${ASSET}")
+endforeach(ASSET)
+add_custom_target(Assets ALL DEPENDS ${ASSET_DEPENDENCIES})
