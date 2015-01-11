@@ -3563,7 +3563,7 @@ void CApplicationData::ResizeCanvases(){
 int CApplicationData::Init(int argc, char *argv[]){
     DIR *MapDirectory;
     struct dirent *DirectoryEntry;
-    std::string MapPath = "../maps";
+    std::string MapPath = "maps";
     // This is called in all GTK applications. Arguments are parsed from the 
     // command line and are returned to the application. All GTK+ specific 
     // arguments are removed from the argc/argv list.
@@ -3617,83 +3617,83 @@ int CApplicationData::Init(int argc, char *argv[]){
     
     
 
-    if(!D2DTerrainTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "2DTerrain.dat")){
+    if(!D2DTerrainTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/2DTerrain.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!D3DTerrainTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "3DTerrain.dat")){
+    if(!D3DTerrainTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/3DTerrain.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!D3DFloorTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "3DFloor.dat")){
+    if(!D3DFloorTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/3DFloor.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!D3DWallTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "3DWall.dat")){
+    if(!D3DWallTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/3DWall.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!D3DCannonTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "3DCannon.dat")){
+    if(!D3DCannonTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/3DCannon.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!D3DCannonballTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "3DCannonball.dat")){
+    if(!D3DCannonballTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/3DCannonball.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!D3DExplosionTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "3DExplosion.dat")){
+    if(!D3DExplosionTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/3DExplosion.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!D3DBurnTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "3DBurn.dat")){
+    if(!D3DBurnTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/3DBurn.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!D3DCannonPlumeTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "3DCannonPlume.dat")){
+    if(!D3DCannonPlumeTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/3DCannonPlume.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!D3DCastleTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "3DCastle.dat")){
+    if(!D3DCastleTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/3DCastle.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!D2DCastleCannonTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "2DCastleCannon.dat")){
+    if(!D2DCastleCannonTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/2DCastleCannon.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }    
-    if(!D2DCastleSelectTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "2DCastleSelect.dat")){
+    if(!D2DCastleSelectTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/2DCastleSelect.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!D2DWallFloorTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "2DWallFloor.dat")){
+    if(!D2DWallFloorTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/2DWallFloor.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!DDigitTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "Digits.dat")){
+    if(!DDigitTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/Digits.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!DBrickTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "Bricks.dat")){
+    if(!DBrickTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/Bricks.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!DMortarTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "Mortar.dat")){
+    if(!DMortarTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/Mortar.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!DTargetTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "Target.dat")){
+    if(!DTargetTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/Target.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!DWhiteFont.LoadFont(DDrawingArea->window, DDrawingContext, "FontKingthingsWhite.dat")){
+    if(!DWhiteFont.LoadFont(DDrawingArea->window, DDrawingContext, "data/FontKingthingsWhite.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!DBlackFont.LoadFont(DDrawingArea->window, DDrawingContext, "FontKingthingsBlack.dat")){
+    if(!DBlackFont.LoadFont(DDrawingArea->window, DDrawingContext, "data/FontKingthingsBlack.dat")){
         printf("Failed to load tileset.\n");
         return -1;
     }
-    if(!DSoundMixer.LoadLibrary("SoundClips.dat")){
+    if(!DSoundMixer.LoadLibrary("data/SoundClips.dat")){
         printf("Failed to load sound clips.\n");
         return -1;
     }

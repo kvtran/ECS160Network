@@ -15,6 +15,7 @@
 #include "GraphicTileset.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>
 
 CGraphicTileset::CGraphicTileset(){
     DTileset = NULL;
