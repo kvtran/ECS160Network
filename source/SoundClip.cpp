@@ -14,7 +14,7 @@
 */
 #include "SoundClip.h"
 #include <sndfile.h>
-
+#include <cstring>
 
 CSoundClip::CSoundClip(){
     DData = NULL;

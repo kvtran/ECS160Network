@@ -14,6 +14,7 @@
 */
 #include "SoundLibraryMixer.h"
 #include <math.h>
+#include <cstring>
 
 #define FRAMES_PER_BUFFER       64
 #ifndef M_PI

@@ -15,6 +15,7 @@
 #include "TerrainMap.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>
         
 CTerrainMap::CTerrainMap(){
     D2DTileset = NULL;
