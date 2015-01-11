@@ -43,6 +43,26 @@ To build docs, run `doxygen`
     |- make_and_run.sh - Script for building project
     |- README.md - This file
 
+## Working on Issues
+
+- Start a new branch for the issue
+
+      git checkout -b issue-name
+
+- Work on fixing issue
+- Commit changes
+
+      git commit -m "<what you did> fixes #<issue number>"
+
+- Push new branch up
+
+      git push --set-upstream origin issue-name
+
+- Create a new pull request from master to your branch
+  - Name it "<what you did>. Fixes #<issue number>"
+  - Include description
+  - Tag @ricmatsui @wotwell and anyone else that should review it
+
 ## Source Conventions
 
 - Indentation
