@@ -17,11 +17,21 @@
 #include <stdlib.h>
 #include <cstring>
         
+/**
+ * Terrain Map empty constructor
+ * 
+ * Initialize map to NULL
+ */
 CTerrainMap::CTerrainMap(){
     D2DTileset = NULL;
     D3DTileset = NULL;
 }
 
+/**
+ * Terrain Map constructor
+ *
+ * @param &map Map used to initialize TerrainMap
+ */
 CTerrainMap::CTerrainMap(const CTerrainMap &map){
     D2DTileset = map.D2DTileset;
     D3DTileset = map.D3DTileset;
@@ -34,10 +44,16 @@ CTerrainMap::CTerrainMap(const CTerrainMap &map){
     DMapName = map.DMapName;
 }
 
+/**
+ * Terrain Map destructor
+ */
 CTerrainMap::~CTerrainMap(){
 
 }
 
+/**
+ *  Operator overload function for '='
+ */
 CTerrainMap &CTerrainMap::operator=(const CTerrainMap &map){
     if(this != &map){
         D2DTileset = map.D2DTileset;
@@ -53,14 +69,23 @@ CTerrainMap &CTerrainMap::operator=(const CTerrainMap &map){
     return *this;
 }
 
+/**
+ * Getter function for DMapName
+ */
 std::string CTerrainMap::MapName() const{
     return DMapName;   
 }
 
+/**
+ * Getter function for DPlayerCount
+ */
 int CTerrainMap::PlayerCount() const{
     return DPlayerCount;
 }
 
+/**
+ * Getter function for castle count
+ */ 
 int CTerrainMap::CastleCount() const{
     return DCastleLocations.size() / 2;
 }
@@ -75,6 +100,9 @@ bool CTerrainMap::CastleLocation(int index, int &xpos, int &ypos) const{
     return true;
 }
 
+/**
+ * Gets width of map
+ */
 int CTerrainMap::Width() const{
     if(D2DMap.size()){
         return D2DMap[0].size();
@@ -82,6 +110,9 @@ int CTerrainMap::Width() const{
     return 0;
 }
 
+/**
+ * Gets height of map
+ */
 int CTerrainMap::Height() const{
     return D2DMap.size();
 }
