@@ -16,6 +16,10 @@ For Ubuntu install the following packages:
 
 `sudo apt-get install build-essential doxygen cmake libgtk2.0-dev portaudio19-dev libsndfile1-dev libfluidsynth-dev`
 
+For Fedora install the following packages:
+
+`yum install doxygen cmake gtk2-devel portaudio-devel libsndfile-devel fluidsynth-devel`
+
 ## Building
 
 Make a build directory and run `cmake` and `make`
