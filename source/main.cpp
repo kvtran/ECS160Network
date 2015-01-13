@@ -2664,6 +2664,11 @@ void CApplicationData::BattleMode(){
         DWindDirection = 0;
         DWindSpeed = 1;
     }
+
+    /*
+     * This code sets probabilities for the wind to change direction/speed and min/max wind speed
+     */
+
     else{
         unsigned int ChangeProbability;
         unsigned int DirectionProbability;
@@ -2691,7 +2696,11 @@ void CApplicationData::BattleMode(){
             MinWindSpeed = WINDSPEED_COUNT / 2;
             MaxWindSpeed = WINDSPEED_COUNT - 1;
         }
-        
+       
+        /*
+         * This code deals with changing wind velocity and direction from an RNG
+         */
+ 
         if((DRandomNumberGenerator.Random() % RANDOM_NUMBER_MAX) < ChangeProbability){
             unsigned int Dirchange = DRandomNumberGenerator.Random() % RANDOM_NUMBER_MAX;
             unsigned int SpeedChange = DRandomNumberGenerator.Random() % RANDOM_NUMBER_MAX;
