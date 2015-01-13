@@ -3208,7 +3208,7 @@ void CApplicationData::ExpandUnclaimed(int xpos, int ypos){
     /**
       * Expands onto unclaimed land
       *
-      * \param x,y Coordinates of the position where expansion outward is desired
+      * @param x,y Coordinates of the position where expansion outward is desired
       */
     bool NValid, EValid, SValid, WValid;
     
@@ -3327,8 +3327,8 @@ bool CApplicationData::BoundsCheck(int &xindex, int &yindex){
     /**
      * Checks if coordinates given are nonnegative or within the bounds of the map.
      *
-     * \param x,y References to x and y coordinates
-     * \return If the bounds are valid
+     * @param x,y References to x and y coordinates
+     * @return If the bounds are valid
      */
     bool ValidBounds = true;
     if(0 > xindex){
@@ -3388,7 +3388,7 @@ int CApplicationData::DetermineConquered(){
      * Determines if a player has been conquered (lost the game).
      * Determines by examining how many surrounded castles still exist.
      * If there are no more castles for the player, the player is conquered.
-     * \return Number of living players
+     * @return Number of living players
      */
     int LivingPlayers = 0;
     
@@ -3461,8 +3461,8 @@ void CApplicationData::LoadTerrainMap(int index){
     /**
      * Loads the desired map based on the index given.
      *
-     * \param index 
-     * \returns Exits if the index is negative or the index > terrain maps array size
+     * @param index 
+     * @returns Exits if the index is negative or the index > terrain maps array size
      */
 
     if((0 > index)||(DTerrainMaps.size() <= index)){
