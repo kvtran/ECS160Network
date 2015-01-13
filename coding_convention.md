@@ -2,84 +2,152 @@
 
 Parts adapted from [Google C++ Style Guide](http://google-styleguide.googlecode.com/svn/trunk/cppguide.html)
 
-- Indentation
-  - 4 spaces per level
-  - Spaces only
-  - Kerninghan & Ritchi with curly on same line
-- Whitespace
-  - No whitespace between identifier and paren
-  - Whitespace on both sides of identifier and operators
-- Comments
-  - Multiline comments - Single star aligned
+### Indentation
 
-          /**
-           * ... text ...
-           */
+- 4 spaces per level
+- Spaces only
+- Kerninghan & Ritchi with curly on same line
+
+### Whitespace
+
+- No whitespace between identifier and paren
+- Whitespace on both sides of identifier and operators
+
+### Comments
+
+- Multiline comments - Single star aligned
+
+
+    /**
+     * ... text ...
+     */
 
 - Single line comments - Before the line of code
 
-          // If value is set
-          if(val()){
+
+    // If value is set
+    if(val()){
+
 
 - Tags - One of the following
   - `// FIXME: Problem to be fixed`
   - `// NOTE: Keep this in mind`
   - `// TODO: Finish this code here`
-- Header Files
-  - Named with `.h` extension
-  - Include a `#define` guard
 
-        #ifndef FILENAME_H
-        #define FILENAME_H
-        ...
-        #endif
+### Header Files
 
-  - Include order
+- Named with `.h` extension
+- Include a `#define` guard
 
-        // Corresponding file
-        #include "foo/server/fooserver.h"
 
-        // C libraries
-        #include <sys/types.h>
-        #include <unistd.h>
-        // C++ Libraries
-        #include <hash_map>
-        #include <vector>
+    #ifndef FILENAME_H
+    #define FILENAME_H
+    ...
+    #endif
 
-        // Other headers
-        #include "base/basictypes.h"
-        #include "base/commandlineflags.h"
-        #include "foo/server/bar.h"
-- Write short functions
-  - Prefer small and focused functions
-  - Functions longer than 40 lines that can be broken up should be broken up.
-- Naming
-  - General
-    - Should be as descriptive as possible within reason. It's better to be
-      longer than to be ambiguous
 
-          int price_count_reader;    // No abbreviation.
-          int num_errors;            // "num" is a widespread convention.
-          int num_dns_connections;   // Most people know what "DNS" stands for.
-  - File names
-    - Pascal Case
-  - Types
+- Include order
+
+
+    // Corresponding file
+    #include "foo/server/fooserver.h"
+
+    // C libraries
+    #include <sys/types.h>
+    #include <unistd.h>
+    // C++ Libraries
+    #include <hash_map>
+    #include <vector>
+
+    // Other headers
+    #include "base/basictypes.h"
+    #include "base/commandlineflags.h"
+    #include "foo/server/bar.h"
+
+
+### Accessor Functions
+
+- Have getters and setters
+
+
+    class CClassName {
+      protected:
+        int DValue ;
+      public:
+        int Value() const {
+          return DValue;
+        };
+        int Value(int value){
+          return DValue = value;
+        };
+    };
+
+### Constants in comparisons
+
+- Do what is easier to understand
+- Take special care with equality
+
+### Blocks
+
+- Bracket single line `if`s
+- Switch requires default unless value is an enumeration and case on new indent
+
+
+    switch(value){
+        case 0:
+            foo = "bar";
+            break;
+        case 1:
+            foo = "baz";
+            break;
+        default:
+            break;
+    }
+
+
+### Write short functions
+
+- Prefer small and focused functions
+- Functions longer than 40 lines that can be broken up should be broken up.
+
+### Naming
+
+- General
+  - Should be as descriptive as possible within reason. It's better to be
+    longer than to be ambiguous.
+
+
+    int price_count_reader;    // No abbreviation.
+    int num_errors;            // "num" is a widespread convention.
+    int num_dns_connections;   // Most people know what "DNS" stands for.
+
+
+- File names
+  - Pascal Case
+- Code
+  - Case Rules
     - Pascal Case
       - Classes
       - Member Variables
-    - Camel Case
-      - Parameters
+      - Member Functions
+      - Enum Types
+      - Local Variables
     - Screaming Snake Case
       - Constants
-      - Enum Values
-    - TODO: Remaining naming conventions
-    - Metadata Conventions
-      - Classes begin with C
-      - Data member variables begin with D
-      - TODO: Remaining metadata conventions
+    - Lowercase
+      - Parameters
+  - Metadata Conventions
+    - Classes begin with C
+    - Data member variables begin with D
+    - Enum types begin with E
+    - Enum values begin with first letter abbreviation of type.
+      `EConstructionTileType -> cttNone`
+    - Type names begin with T
+    - Struct names begin with S
+    - Globals begin with G
 
 
-## Example
+### Example
 
     TODO: Comment code with conventions
 

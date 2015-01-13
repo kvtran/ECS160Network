@@ -50,21 +50,32 @@ To build docs, run `doxygen` or `./doxygen_and_open.sh`
 
 ## Working on Issues
 
+- Clone the repo
+
+
+    git clone git@github.com:UCDClassNitta/ECS160Linux.git
+
 - Start a new branch for the issue
 
-      git checkout -b issue-name
+
+    git checkout -b issue-name
+
 
 - Work on fixing issue
 - Commit changes
 
-      git commit -m "<what you did> fixes #<issue number>"
+
+    git commit -m "<what you did> fixes #<issue number>"
+
 
 - Push new branch up
 
-      git push --set-upstream origin issue-name
+
+    git push --set-upstream origin issue-name
+
 
 - Create a new pull request from master to your branch
-  - Name it "<what you did>. Fixes #<issue number>"
+  - Name it `<what you did>. Fixes #<issue number>`
   - Include description
   - Tag @ricmatsui @wotwell and anyone else that should review it
 
