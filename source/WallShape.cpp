@@ -440,16 +440,20 @@ bool CWallShape::IsBlock(int x, int y){
     int LookupX, LookupY;
     
     switch(DOrientation){
-        case 1:     LookupX = y;
+        case 1:     // 90 degree rotation to the left
+                    LookupX = y;
                     LookupY = DLocations.size() -  1 - x;
                     break;
-        case 2:     LookupX = DLocations[0].size() -  1 - x;
+        case 2:     // 180 degree rotation
+                    LookupX = DLocations[0].size() -  1 - x;
                     LookupY = DLocations.size() -  1 - y;
                     break;
-        case 3:     LookupX = DLocations[0].size() -  1 - y;
+        case 3:     // 90 degree rotation to the right
+                    LookupX = DLocations[0].size() -  1 - y;
                     LookupY = x;
                     break;
-        default:    LookupX = x;
+        default:    // normal orientation
+                    LookupX = x;
                     LookupY = y;
                     break;
     }

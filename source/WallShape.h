@@ -16,22 +16,55 @@
 */
 #include <vector>
 
+/**
+ * WallShape class
+ */
 class CWallShape{
     protected:
-        std::vector< std::vector< bool > > DLocations;
-        int DOrientation;
+        std::vector< std::vector< bool > > DLocations; /*!< Polyomino square locations */
+        int DOrientation; /*!< Polyomino orientation */ 
         
     public:
+        /**
+         * WallShape constructor.
+         */
         CWallShape();
+
+        /**
+         * WallShape destructor.
+         */
         ~CWallShape();
         
+        /**
+         * Gets width of polyomino.
+         */
         int Width();
+
+        /**
+         * Gets height of polyomino. 
+         */
         int Height();
         
+        /**
+         * Sets type and orientation of polyomino.
+         *
+         * @param val Seed value
+         */
         void Randomize(unsigned int val);
         
+        /**
+         * Changes polyomino orientation.
+         */
         void Rotate();
         
+        /**
+         * Determines if part of the polyomino is contained at the position specified.
+         *
+         * @param x x position
+         * @param y y position
+         *
+         * @returns True if position contains part of polyomino, false if it does not
+         */
         bool IsBlock(int x, int y);
 };
 
