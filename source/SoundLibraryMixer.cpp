@@ -98,7 +98,7 @@ int CSoundLibraryMixer::Timestep(void *out, unsigned long frames, const PaStream
     float *DataPtr = (float *)out;
     
     memset(DataPtr, 0, sizeof(float) * frames * 2);
-    pthread_mutex_lock(&DMutex);
+    pthread_mutex_lock(&DMutex); /*!< Lock mutex before performing timestep */
     for(std::list< SClipStatus >::iterator ClipIterator = DClipsInProgress.begin(); ClipIterator != DClipsInProgress.end(); ){
         bool Advance = true;
         
@@ -163,7 +163,7 @@ int CSoundLibraryMixer::Timestep(void *out, unsigned long frames, const PaStream
         }
     }
     
-    pthread_mutex_unlock(&DMutex);    
+    pthread_mutex_unlock(&DMutex); /*!< Unlock mutex to free up thread after timestep */    
     frames *= 2;
     for(int Frame = 0; Frame < frames; Frame++){
         if(-1.0 > *DataPtr){
@@ -190,17 +190,17 @@ bool CSoundLibraryMixer::LoadLibrary(const std::string &filename){
     if(NULL == FilePointer){
         return false;   
     }
-    if(-1 == getline(&TempBuffer, &BufferSize, FilePointer)){
-        goto LoadLibraryExit1;
+    if(-1 == getline(&TempBuffer, &BufferSize, FilePointer)){ /*!< Scans line from file */
+        goto LoadLibraryExit1; /*!< Close file pointer and returns false */
     }
     sscanf(TempBuffer,"%d", &TotalClips);
     DSoundClips.resize(TotalClips);
     for(int Index = 0; Index < TotalClips; Index++){
         if(-1 == getline(&TempBuffer, &BufferSize, FilePointer)){
-            goto LoadLibraryExit2;
+            goto LoadLibraryExit2; /*!< Clear sound clips and lookup mappings */
         }    
         LastChar = strlen(TempBuffer) - 1;
-        while((0 <= LastChar)&&(('\r' == TempBuffer[LastChar])||('\n' == TempBuffer[LastChar]))){
+        while((0 <= LastChar)&&(('\r' == TempBuffer[LastChar])||('\n' == TempBuffer[LastChar]))){ /*!< Remove carriage return character and line break character from end of line */
             TempBuffer[LastChar] = '\0';
             LastChar--;
         }
@@ -213,8 +213,8 @@ bool CSoundLibraryMixer::LoadLibrary(const std::string &filename){
             TempBuffer[LastChar] = '\0';
             LastChar--;
         }
-        if(!DSoundClips[Index].Load(TempBuffer)){
-            goto LoadLibraryExit2;    
+        if(!DSoundClips[Index].Load(TempBuffer)){ /*!< Try to load sound clip */
+            goto LoadLibraryExit2; 
         }
     }
     DSampleRate = DSoundClips[0].SampleRate();
