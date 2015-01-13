@@ -25,7 +25,8 @@ class CRandomNumberGenerator{
             DRandomSeedLow = 0x89ABCDEF;
         };
         
-        /** Generates a random number using the 2 seeds.
+        /** 
+         * Generates a random number using the 2 seeds.
          * 
          * This sets DRandomSeedHigh and DrandomseedLow.
          *
