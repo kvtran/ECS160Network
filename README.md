@@ -11,14 +11,15 @@ Development packages for:
 
 Documentation:
 - Doxygen
+- Graphviz
 
 For Ubuntu install the following packages:
 
-`sudo apt-get install build-essential doxygen cmake libgtk2.0-dev portaudio19-dev libsndfile1-dev libfluidsynth-dev`
+`sudo apt-get install build-essential doxygen graphviz cmake libgtk2.0-dev portaudio19-dev libsndfile1-dev libfluidsynth-dev`
 
 For Fedora install the following packages:
 
-`yum install doxygen cmake gtk2-devel portaudio-devel libsndfile-devel fluidsynth-devel`
+`yum install doxygen graphviz cmake gtk2-devel portaudio-devel libsndfile-devel fluidsynth-devel`
 
 ## Building
 
@@ -30,7 +31,7 @@ Make a build directory and run `cmake` and `make`
 
 Alternatively, just use `./make_and_run.sh`
 
-To build docs, run `doxygen`
+To build docs, run `doxygen` or `./doxygen_and_open.sh`
 
 ## File Organization
 
