@@ -3205,6 +3205,11 @@ bool CApplicationData::ValidWallPlacement(int colorindex, int xindex, int yindex
 }
 
 void CApplicationData::ExpandUnclaimed(int xpos, int ypos){
+    /**
+      * Expands onto unclaimed land
+      *
+      * \param x,y Coordinates of the position where expansion outward is desired
+      */
     bool NValid, EValid, SValid, WValid;
     
     if(TileTypeIsFloorGroundDamaged(DConstructionTiles[ypos][xpos])){
@@ -3262,6 +3267,9 @@ void CApplicationData::ExpandUnclaimed(int xpos, int ypos){
 }
 
 bool CApplicationData::CleanUpWallEdges(){
+    /**
+     * Cleans up the wall edges that have been destroyed
+     */
     bool WallsRemoved = false;
     
     for(int YPos = 1; YPos + 1< DMapHeight; YPos++){
@@ -3316,6 +3324,12 @@ bool CApplicationData::CleanUpWallEdges(){
 }
 
 bool CApplicationData::BoundsCheck(int &xindex, int &yindex){
+    /**
+     * Checks if coordinates given are nonnegative or within the bounds of the map.
+     *
+     * \param x,y References to x and y coordinates
+     * \return If the bounds are valid
+     */
     bool ValidBounds = true;
     if(0 > xindex){
         xindex = 0; 
@@ -3337,6 +3351,9 @@ bool CApplicationData::BoundsCheck(int &xindex, int &yindex){
 }
 
 void CApplicationData::PlayTickTockSound(){
+    /**
+     * Plays tick-tock sound if within threshold of stage timeout.
+     */
     int MSUntilDeadline = MiliSecondsUntilDeadline(DCurrentStageTimeout);
     int LastTickTockMS = -MiliSecondsUntilDeadline(DLastTickTockTime);
     bool PlaySound = false;
@@ -3367,6 +3384,12 @@ void CApplicationData::PlayTickTockSound(){
 }
 
 int CApplicationData::DetermineConquered(){
+    /**
+     * Determines if a player has been conquered (lost the game).
+     * Determines by examining how many surrounded castles still exist.
+     * If there are no more castles for the player, the player is conquered.
+     * \return Number of living players
+     */
     int LivingPlayers = 0;
     
     for(int ColorIndex = 0; ColorIndex < pcMax; ColorIndex++){
@@ -3393,6 +3416,9 @@ int CApplicationData::DetermineConquered(){
 }
 
 void CApplicationData::ResetMap(){
+    /**
+     * Resets the map
+     */
     for(int Index = 0; Index < DConstructionTiles.size(); Index++){
         std::vector< EConstructionTileType >::iterator Iterator;
         std::vector< int >::iterator HitIterator;
@@ -3432,6 +3458,12 @@ void CApplicationData::ResetMap(){
 }
 
 void CApplicationData::LoadTerrainMap(int index){
+    /**
+     * Loads the desired map based on the index given.
+     *
+     * \param index 
+     * \returns Exits if the index is negative or the index > terrain maps array size
+     */
 
     if((0 > index)||(DTerrainMaps.size() <= index)){
         return;   
@@ -3478,7 +3510,9 @@ void CApplicationData::LoadTerrainMap(int index){
 }
 
 void CApplicationData::ResizeCanvases(){
-    // Resize the canvas
+    /**
+     * Resizes the canvas
+     */
     gtk_drawing_area_size(GTK_DRAWING_AREA(DDrawingArea), DCanvasWidth * DScaling, DCanvasHeight * DScaling);
     
     if(NULL != DDoubleBufferPixmap){
