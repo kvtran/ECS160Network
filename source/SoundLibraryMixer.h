@@ -54,7 +54,7 @@ class CSoundLibraryMixer{
         } SToneStatus, *SToneStatusRef;
         
         std::vector< CSoundClip > DSoundClips; /*!< Sound clips */
-        std::map< std::string, int > DMapping; /*!< String to int map */
+        std::map< std::string, int > DMapping; /*!< Map of sound clips by name */
         std::list< SClipStatus > DClipsInProgress; /*!< Clips in progress */
         std::list< SToneStatus > DTonesInProgress; /*!< Tones in progress */
         std::list< int > DFreeClipIDs; /*!< Free clip IDs */
@@ -66,9 +66,9 @@ class CSoundLibraryMixer{
         fluid_synth_t* DFluidSynthesizer; /*!< Fluid synthesizer */
         fluid_player_t* DFluidPlayer; /*!< Fluid player */
         fluid_audio_driver_t* DFluidAudioDriver; /*!< Fluid audio driver */
-        pthread_mutex_t DMutex; /*!< Mutex */
+        pthread_mutex_t DMutex; /*!< Mutual exclusion used to allow for synchronised update of songs when timestepping */
         float *DSineWave; /*!< Sine wave */
-        int DSampleRate; /*!< Sample rate */
+        int DSampleRate; /*!< Sample rate used to calculate frequency and volume decay in tone*/
         int DNextClipID; /*!< ID of next clip */
         int DNextToneID; /*!< ID of next tone */
         
