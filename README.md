@@ -50,84 +50,28 @@ To build docs, run `doxygen` or `./doxygen_and_open.sh`
 
 ## Working on Issues
 
+- Clone the repo
+
+        git clone git@github.com:UCDClassNitta/ECS160Linux.git
+
 - Start a new branch for the issue
 
-      git checkout -b issue-name
+        git checkout -b issue-name
 
 - Work on fixing issue
 - Commit changes
 
-      git commit -m "<what you did> fixes #<issue number>"
+        git commit -m "<what you did> fixes #<issue number>"
 
 - Push new branch up
 
-      git push --set-upstream origin issue-name
+        git push --set-upstream origin issue-name
 
 - Create a new pull request from master to your branch
-  - Name it "<what you did>. Fixes #<issue number>"
+  - Name it `<what you did>. Fixes #<issue number>`
   - Include description
   - Tag @ricmatsui @wotwell and anyone else that should review it
 
-## Source Conventions
+## Coding Convention
 
-- Indentation
-  - 4 spaces per level
-  - Spaces only
-  - Kerninghan & Ritchi with curly on same line
-- Whitespace
-  - No whitespace between identifier and paren
-  - Whitespace on both sides of identifier and operators
-- Comments
-  - Multiline comments - Single star aligned
-
-        /**
-         * ... text ...
-         */
-
-  - Single line comments - Before the line of code
-
-        // If value is set
-        if(val()){
-
-  - Tags - One of the following
-      - `// FIXME: Problem to be fixed`
-      - `// NOTE: Keep this in mind`
-      - `// TODO: Finish this code here`
-- Naming convention
-  - Pascal Case
-    - Classes
-    - Member Variables
-  - Camel Case
-    - Parameters
-  - TODO: Remaining naming conventions
-- Metadata Conventions
-  - Classes begin with C
-  - Data member variables begin with D
-  - TODO: Remaining metadata conventions
-
-
-### Example
-
-TODO: Comment code with conventions
-
-    class CRandomNumberGenerator{
-        protected:
-        unsigned int DRandomSeedHigh;
-        unsigned int DRandomSeedLow;
-        public:
-        CRandomNumberGenerator(){
-            DRandomSeedHigh = 0x01234567;
-            DRandomSeedLow = 0x89ABCDEF;
-        };
-        void Seed(unsigned int high, unsigned int low){
-            if((high != low) && low && high){
-                DRandomSeedHigh = high;
-                DRandomSeedLow = low;
-            }
-        };
-        unsigned int Random(){
-            DRandomSeedHigh = 36969 * (DRandomSeedHigh & 65535) + (DRandomSeedHigh >> 16);
-            DRandomSeedLow = 18000 * (DRandomSeedLow & 65535) + (DRandomSeedLow >> 16);
-            return (DRandomSeedHigh << 16) + DRandomSeedLow;
-        };
-    };
+See the [coding convention document](coding_convention.md)
