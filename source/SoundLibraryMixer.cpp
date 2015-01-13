@@ -100,6 +100,7 @@ int CSoundLibraryMixer::Timestep(void *out, unsigned long frames, const PaStream
 
     memset(DataPtr, 0, sizeof(float) * frames * 2);
     pthread_mutex_lock(&DMutex); // Lock mutex before performing timestep
+    // Perform timestep on clips currently playing
     for(std::list< SClipStatus >::iterator ClipIterator = DClipsInProgress.begin(); ClipIterator != DClipsInProgress.end(); ){
         bool Advance = true;
 
@@ -116,6 +117,7 @@ int CSoundLibraryMixer::Timestep(void *out, unsigned long frames, const PaStream
         }
     }
 
+    // Perform timestep on tones currently playing
     for(std::list< SToneStatus >::iterator ToneIterator = DTonesInProgress.begin(); ToneIterator != DTonesInProgress.end(); ){
         bool Advance = true;
         float *CurOutPtr = DataPtr;
