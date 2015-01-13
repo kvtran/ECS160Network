@@ -28,9 +28,7 @@ CTerrainMap::CTerrainMap(){
 }
 
 /**
- * Terrain Map constructor
- *
- * @param &map Map used to initialize TerrainMap
+ * Terrain Map constructor, initialize game map with given map parameter.
  */
 CTerrainMap::CTerrainMap(const CTerrainMap &map){
     D2DTileset = map.D2DTileset;
