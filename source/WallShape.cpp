@@ -452,7 +452,8 @@ bool CWallShape::IsBlock(int x, int y){
                     LookupX = DLocations[0].size() -  1 - y;
                     LookupY = x;
                     break;
-        default:    LookupX = x;
+        default:    // normal orientation
+                    LookupX = x;
                     LookupY = y;
                     break;
     }
