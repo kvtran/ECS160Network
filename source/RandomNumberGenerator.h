@@ -4,7 +4,6 @@
 /**
  * CRandomNumberGenerator class, used to generate a random number
  */
-
 class CRandomNumberGenerator{
     protected:
         /**
