@@ -18,6 +18,9 @@
 #include "GameDataTypes.h"
 #include <vector>
 
+/**
+ * CTerrainMap class, used to build game map.
+ */
 class CTerrainMap{
     protected:
         CGraphicTileset *D2DTileset;
