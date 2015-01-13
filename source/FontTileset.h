@@ -17,18 +17,52 @@
 #include "GraphicTileset.h"
 #include <vector>
 
+/**
+ * CFontTileset class, used to write text.
+ */
 class CFontTileset : public CGraphicTileset{
     protected:
-        std::vector< gint > DCharacterWidths;
-        std::vector< std::vector < gint > > DDeltaWidths;
+        std::vector< gint > DCharacterWidths; /*!< vector of character widths. */
+        std::vector< std::vector < gint > > DDeltaWidths; /*!< vector or vectors of delta widths. */
         
     public:
+        /**
+         * Empty constructor, currently does nothing.
+         */
         CFontTileset();
+
+        /**
+         * Font Tileset destructor.
+         */
         ~CFontTileset();
         
+        /**
+         * Loads Font and Tileset.
+         * 
+         * @param drawable A GdkDrawable, used to determine default values for the new pixmap
+         * @param gc Graphics context that holds information about how things are drawn
+         * @param filename Name of file to load Tileset from
+         */
         bool LoadFont(GdkDrawable *drawable, GdkGC *gc, const std::string &filename);
         
+        /**
+         * Draws string by callign DrawTile where each letter is a tile.
+         *
+         * @param drawable destination drawable to draw tile
+         * @param gc Graphics context, used for clipping
+         * @param xpos Destination X coord inside drawable
+         * @param ypos Destination Y coord inside drawable
+         * @param str string to be drawn
+         */
         void DrawText(GdkDrawable *drawable, GdkGC *gc, gint xpos, gint ypos, const std::string &str);
+
+        /**
+         * Finds the length and width of str if it were drawn.
+         *
+         * @param str string to be measured
+         * @param width the gint that will be altered to match the width of the text
+         * @param height the gint that will be altered to match the height of the text
+         */
         void MeasureText(const std::string &str, gint &width, gint &height);
 };
 
