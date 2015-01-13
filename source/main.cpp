@@ -2401,8 +2401,6 @@ void CApplicationData::BattleMode(){
             Burn++;   
         }
     }
-
-    //A for loop that goes through the different states of explosion for graphics
     for(std::list< SSpriteState >::iterator Explosion = DExplosionStates.begin(); Explosion != DExplosionStates.end(); ){
         bool Advance = true;
         
@@ -2413,8 +2411,6 @@ void CApplicationData::BattleMode(){
             TempXTile = Explosion->DXIndex;
             TempYTile = Explosion->DYIndex;
             InBounds = BoundsCheck(TempXTile, TempYTile);
-            
-            //keeps explosion inside the bounds
             if(InBounds){
                 if(TileTypeIsWallDamaged(DConstructionTiles[TempYTile][TempXTile])){
                     Explosion->DStep = 0;
@@ -2431,14 +2427,10 @@ void CApplicationData::BattleMode(){
             Explosion = DExplosionStates.erase(Explosion);
             Advance = false;
         }        
-        
-        //If the explosion is still in bounds, increment the explosion iterator
         if(Advance){
             Explosion++;   
         }
     }
-
-    //A for loop that goes through the different states of Plume for graphics
     for(std::list< SSpriteState >::iterator Plume = DPlumeStates.begin(); Plume != DPlumeStates.end(); ){
         bool Advance = true;
         
@@ -2451,11 +2443,6 @@ void CApplicationData::BattleMode(){
             Plume++;   
         }
     }
-
-    /**
-     * A for loop that goes through the trajectory of the Cannonball for graphics
-     * Position of the canonball is affected by wind and velocity of cannonball * time
-     */	
     for(std::list< SCannonballTrajectory >::iterator Cannonball = DCannonballTrajectories.begin(); Cannonball != DCannonballTrajectories.end(); ){
         bool Advance = true;
         Cannonball->DXVelocity += WindX;
@@ -2464,8 +2451,6 @@ void CApplicationData::BattleMode(){
         Cannonball->DYPosition += Cannonball->DYVelocity * TIMESTEP_PERIOD;
         Cannonball->DZPosition += Cannonball->DZVelocity * TIMESTEP_PERIOD;
         Cannonball->DZVelocity -= STANDARD_GRAVITY * TIMESTEP_PERIOD;
-
-        //If the cannonball hits the ground
         if(0 > Cannonball->DZVelocity){
             int TempXTile, TempYTile;
             bool Collision = false;
@@ -2490,9 +2475,7 @@ void CApplicationData::BattleMode(){
                     TempExplosionState.DStep = 0;
                     
                     TempExplosionState.DSpriteIndex = D3DExplosionIndices[AltExplosion ? etWallExplosion1 : etWallExplosion0];
-                    Collision = true;  
-                    
-                    //Switch statement which denotes which color of wall (color denotes a specific player) is damaged 
+                    Collision = true;   
                     switch(DTerrainMap.TileType(TempXTile, TempYTile)){
                         case pcBlue:    DConstructionTiles[TempYTile][TempXTile] = cttBlueWallDamaged;
                                         break;
@@ -2585,8 +2568,7 @@ void CApplicationData::BattleMode(){
                 Advance = false;
                 Cannonball = DCannonballTrajectories.erase(Cannonball);
             }
-        
-        // move the cannonball iterator forward to next frame
+        }
         if(Advance){
             Cannonball++;    
         }
@@ -2650,8 +2632,6 @@ void CApplicationData::BattleMode(){
         DWindDirection = 0;
         DWindSpeed = 1;
     }
-
-     //This code sets probabilities for the wind to change direction/speed and min/max wind speed
     else{
         unsigned int ChangeProbability;
         unsigned int DirectionProbability;
@@ -2679,8 +2659,7 @@ void CApplicationData::BattleMode(){
             MinWindSpeed = WINDSPEED_COUNT / 2;
             MaxWindSpeed = WINDSPEED_COUNT - 1;
         }
-       
-        //This code deals with changing wind velocity and direction from an RNG
+        
         if((DRandomNumberGenerator.Random() % RANDOM_NUMBER_MAX) < ChangeProbability){
             unsigned int Dirchange = DRandomNumberGenerator.Random() % RANDOM_NUMBER_MAX;
             unsigned int SpeedChange = DRandomNumberGenerator.Random() % RANDOM_NUMBER_MAX;
@@ -2729,13 +2708,6 @@ void CApplicationData::BattleMode(){
     }
 }
 
-/**
- * This code deals with the options presented on screen. If the player is on the main menu, then it presents the player with
- * game choices like single player, multiplayer, etc. If they are on the options menu, then it presents different options like
- * sound and network for the player. If the player is in the battle mode it will tell the player to prepare for battle.
- * Etc
- */
-
 void CApplicationData::ChangeMode(EGameMode nextmode){
     if(gmMainMenu == nextmode){
         DMenuTitle = "THE GAME";
@@ -2776,7 +2748,6 @@ void CApplicationData::ChangeMode(EGameMode nextmode){
     DNextGameMode = nextmode;
 }
 
-// This code will display the banner which is specified by Message
 void CApplicationData::InitializeBanner(const std::string &message){
     gint BannerWidth, BannerHeight;
     
@@ -2787,8 +2758,6 @@ void CApplicationData::InitializeBanner(const std::string &message){
 
 #define MAX_DELTAMOVE   3
 
-
- // This code will move the AI based on the color of the castle that is passed in as input
 void CApplicationData::MoveAI(int colorindex){
     int DeltaX, DeltaY;
     
@@ -2810,7 +2779,6 @@ void CApplicationData::MoveAI(int colorindex){
     DCurrentY[colorindex] += DeltaY;
 }
 
-// This is AI code for the computer to select a castle
 void CApplicationData::SelectCastleAI(){
     int SecondsLeft = SecondsUntilDeadline(DCurrentStageTimeout);
     int IncompleteCount = 0;
