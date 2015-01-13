@@ -28,7 +28,7 @@ class CTerrainMap{
         std::vector< std::vector< int > > D2DMap; /*!< 2D map */
         std::vector< std::vector< int > > D3DMap; /*!< 3D map */
         std::vector< std::vector< EPlayerColor > > DTileTypeMap; /*!< Tile type map */
-        std::vector< std::string > DStringMap; /*!< TODO: Figure out what this is */
+        std::vector< std::string > DStringMap; /*!< String map */
         std::vector< int > DCastleLocations; /*!< Castle locations */
         int DPlayerCount; /*!< Player count */
         std::string DMapName; /*!< Map name */
@@ -131,8 +131,8 @@ class CTerrainMap{
 	 * @param drawable The destination to draw the map
 	 * @param gc The graphics context to draw the map in
 	 * @param winddir Wind direction
-	 * @param totalsteps TODO: figure out what this is
-	 * @param timestep TODO: figure out what this is
+	 * @param totalsteps Total steps
+	 * @param timestep Time increment
 	 */
         void Draw3DMap(GdkDrawable *drawable, GdkGC *gc, int winddir, int totalsteps, int timestep);
 };
