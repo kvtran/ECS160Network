@@ -17,19 +17,11 @@
 #include <stdlib.h>
 #include <cstring>
         
-/**
- * Terrain Map empty constructor
- * 
- * Initialize map to NULL
- */
 CTerrainMap::CTerrainMap(){
     D2DTileset = NULL;
     D3DTileset = NULL;
 }
 
-/**
- * Terrain Map constructor, initialize game map with given map parameter.
- */
 CTerrainMap::CTerrainMap(const CTerrainMap &map){
     D2DTileset = map.D2DTileset;
     D3DTileset = map.D3DTileset;
@@ -42,16 +34,10 @@ CTerrainMap::CTerrainMap(const CTerrainMap &map){
     DMapName = map.DMapName;
 }
 
-/**
- * Terrain Map destructor
- */
 CTerrainMap::~CTerrainMap(){
 
 }
 
-/**
- *  Operator overload function for '='
- */
 CTerrainMap &CTerrainMap::operator=(const CTerrainMap &map){
     if(this != &map){
         D2DTileset = map.D2DTileset;
@@ -67,30 +53,18 @@ CTerrainMap &CTerrainMap::operator=(const CTerrainMap &map){
     return *this;
 }
 
-/**
- * Getter function for DMapName
- */
 std::string CTerrainMap::MapName() const{
     return DMapName;   
 }
 
-/**
- * Getter function for DPlayerCount
- */
 int CTerrainMap::PlayerCount() const{
     return DPlayerCount;
 }
 
-/**
- * Getter function for castle count
- */ 
 int CTerrainMap::CastleCount() const{
     return DCastleLocations.size() / 2;
 }
 
-/**
- * Sets xpos and ypos if given index is in castle locations. 
- */
 bool CTerrainMap::CastleLocation(int index, int &xpos, int &ypos) const{
     index *= 2;
     if((0 > index)||(index >= DCastleLocations.size())){
@@ -101,9 +75,6 @@ bool CTerrainMap::CastleLocation(int index, int &xpos, int &ypos) const{
     return true;
 }
 
-/**
- * Gets width of map
- */
 int CTerrainMap::Width() const{
     if(D2DMap.size()){
         return D2DMap[0].size();
@@ -111,16 +82,10 @@ int CTerrainMap::Width() const{
     return 0;
 }
 
-/**
- * Gets height of map
- */
 int CTerrainMap::Height() const{
     return D2DMap.size();
 }
 
-/**
- * Gets tile type if x and y indices are within constraints of DTileTypeMap.
- */
 EPlayerColor CTerrainMap::TileType(int xindex, int yindex) const{
     if((0 > xindex)||(0 > yindex)){
         return pcMax;   
@@ -134,9 +99,6 @@ EPlayerColor CTerrainMap::TileType(int xindex, int yindex) const{
     return DTileTypeMap[yindex][xindex];
 }
 
-/**
- * Loads map.
- */
 bool CTerrainMap::LoadMap(CGraphicTileset *tileset2d, CGraphicTileset *tileset3d, const std::string &filename){
     std::vector< std::string > WaterNames2D, WaterNames3D;
     char *TempBuffer = NULL;
@@ -419,9 +381,6 @@ LoadMapExit:
     return ReturnStatus;
 }
 
-/**
- * Draws a preview of the map.
- */
 void CTerrainMap::DrawPreviewMap(GdkDrawable *drawable, GdkGC *gc, gint xoff, gint yoff){
     for(int YIndex = 0, YPos = yoff; YIndex < D2DMap.size(); YIndex++, YPos += 2){
         for(int XIndex = 0, XPos = xoff; XIndex < D2DMap[YIndex].size(); XIndex++, XPos += 2){
@@ -430,9 +389,6 @@ void CTerrainMap::DrawPreviewMap(GdkDrawable *drawable, GdkGC *gc, gint xoff, gi
     }
 }
 
-/**
- * Draws 2D map.
- */
 void CTerrainMap::Draw2DMap(GdkDrawable *drawable, GdkGC *gc){
     int TileWidth, TileHeight;
     
@@ -445,9 +401,6 @@ void CTerrainMap::Draw2DMap(GdkDrawable *drawable, GdkGC *gc){
     }
 }
 
-/**
- * Draws 3D map.
- */
 void CTerrainMap::Draw3DMap(GdkDrawable *drawable, GdkGC *gc, int winddir, int totalsteps, int timestep){
     int TileWidth, TileHeight;
     

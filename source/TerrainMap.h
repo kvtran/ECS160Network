@@ -23,37 +23,117 @@
  */
 class CTerrainMap{
     protected:
-        CGraphicTileset *D2DTileset;
-        CGraphicTileset *D3DTileset;
-        std::vector< std::vector< int > > D2DMap;
-        std::vector< std::vector< int > > D3DMap;
-        std::vector< std::vector< EPlayerColor > > DTileTypeMap;
-        std::vector< std::string > DStringMap;
-        std::vector< int > DCastleLocations;
-        int DPlayerCount;
-        std::string DMapName;
+        CGraphicTileset *D2DTileset; /*!< 2D tile set. */
+        CGraphicTileset *D3DTileset; /*!< 3D tile set. */
+        std::vector< std::vector< int > > D2DMap; /*!< 2D map */
+        std::vector< std::vector< int > > D3DMap; /*!< 3D map */
+        std::vector< std::vector< EPlayerColor > > DTileTypeMap; /*!< Tile type map */
+        std::vector< std::string > DStringMap; /*!< TODO: Figure out what this is */
+        std::vector< int > DCastleLocations; /*!< Castle locations */
+        int DPlayerCount; /*!< Player count */
+        std::string DMapName; /*!< Map name */
         
     public:
+	/**
+     	 * Empty constructor, initialize map to NULL.
+	 */
         CTerrainMap();
+
+	/**
+	 * Terrain Map constructor.
+	 *
+	 * @param map Used to initialized terrain map
+	 */
         CTerrainMap(const CTerrainMap &map);
+
+	/**
+   	 * Terrain Map destructor.
+	 */
         ~CTerrainMap();
         
+	/**
+	 * Operator overload =.
+	 */
         CTerrainMap &operator=(const CTerrainMap &map);
         
+	/**
+	 * Getter function for DMapName.
+	 */
         std::string MapName() const;
+
+	/**
+	 * Getter function for DPlayerCount.
+	 */
         int PlayerCount() const;
+
+	/**
+	 * Returns castle count.
+	 */
         int CastleCount() const;
+
+	/**
+	 * Sets castle location.
+	 *
+	 * @param index Index of castle in DCastleLocations
+	 * @param xpos Set if given index exists
+	 * @param ypos Set if given index exists
+	 * @return False if given index is not in constraints of array DCastleLocations, and true if it is - xpos, ypos set only if false is not returned.
+	 */
         bool CastleLocation(int index, int &xpos, int &ypos) const;
         
+	/**
+	 * Gets width of map.
+	 */
         int Width() const;
+
+	/**
+	 * Gets height of map.
+	 */
         int Height() const;
         
+	/**
+	 * Gets tile type if x and y indices are within constraints of DTileTypeMap.
+	 * @param xindex xindex
+	 * @param yindex yindex
+	 */
         EPlayerColor TileType(int xindex, int yindex) const;
         
+	/**
+	 * Loads map
+	 *
+	 * @param tileset2d 2D tile set
+	 * @param tileset3d 3D tile set
+	 * @param filename Map to load
+	 */
         bool LoadMap(CGraphicTileset *tileset2d, CGraphicTileset *tileset3d, const std::string &filename);
         
+	/**
+	 * Draws preview of map.
+	 *
+	 * @param drawable The destination to draw the map
+	 * @param gc The graphics context to draw the map in
+	 * @param xoff Offset x
+	 * @param yoff Offset y	
+	 */
         void DrawPreviewMap(GdkDrawable *drawable, GdkGC *gc, gint xoff, gint yoff);
+
+	/**
+	 * Draws 2D version of the map
+	 *
+	 * @param drawable The destination to draw the map
+	 * @param gc The graphics context to draw the map in
+	 */
         void Draw2DMap(GdkDrawable *drawable, GdkGC *gc);
+
+	/**
+	 * Draws 3D version of the map
+	 *
+	 * @param drawable The destination to draw the map
+	 * @param gc The graphics context to draw the map in
+	 * @param winddir Wind direction
+	 * @param totalsteps TODO: figure out what this is
+	 * @param timestep TODO: figure out what this is
+	 */
         void Draw3DMap(GdkDrawable *drawable, GdkGC *gc, int winddir, int totalsteps, int timestep);
 };
 
