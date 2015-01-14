@@ -1610,10 +1610,11 @@ void CApplicationData::Draw3DFrame(){
     DAnimationTimestep += DWindSpeed;
 }
 
+
 void CApplicationData::DrawBanner(const std::string &message){
-    gint BannerWidth = 0;
-    gint BannerHeight = 0;
-    gint RequiredWidth, RequiredHeight;
+    gint BannerWidth = 0; 
+    gint BannerHeight = 0; 
+    gint RequiredWidth, RequiredHeight; 
     gint TextRequiredWidth, TextRequiredHeight;
     gint TextX, TextY;
     //gint BrickType = 0;
@@ -1626,6 +1627,8 @@ void CApplicationData::DrawBanner(const std::string &message){
     if(NULL != DBannerPixmap){
         gdk_pixmap_get_size(DBannerPixmap, &BannerWidth, &BannerHeight); 
     }
+    
+    // Creates Bannerpixmap if banner's dimensions don't mix
     if((BannerWidth != RequiredWidth)||(BannerHeight != RequiredHeight)){
         if(NULL != DBannerPixmap){
              g_object_unref(DBannerPixmap);
@@ -1633,22 +1636,24 @@ void CApplicationData::DrawBanner(const std::string &message){
         DBannerPixmap = gdk_pixmap_new(DDrawingArea->window, RequiredWidth, RequiredHeight, -1);
     }
 
-    DrawTextFrame(DBannerPixmap, RequiredWidth, RequiredHeight);
-    TextX = (DCanvasWidth / 2) - (TextRequiredWidth / 2);
-    TextY = (RequiredHeight / 2) - (TextRequiredHeight / 2);
-    DBlackFont.DrawText(DBannerPixmap, DDrawingContext, TextX + 1, TextY + 1, message);
-    DWhiteFont.DrawText(DBannerPixmap, DDrawingContext, TextX, TextY, message);
+    DrawTextFrame(DBannerPixmap, RequiredWidth, RequiredHeight); // Draws text frame 
+    TextX = (DCanvasWidth / 2) - (TextRequiredWidth / 2); // Determines textX 
+    TextY = (RequiredHeight / 2) - (TextRequiredHeight / 2); // Determines textY 
+    DBlackFont.DrawText(DBannerPixmap, DDrawingContext, TextX + 1, TextY + 1, message); // Draws text in black font 
+    DWhiteFont.DrawText(DBannerPixmap, DDrawingContext, TextX, TextY, message); // Draws text in white font 
 }
 
+// Draws message 
 void CApplicationData::DrawMessage(const std::string &message){
-    gint MessageWidth = 0;
-    gint MessageHeight = 0;
-    gint RequiredWidth, RequiredHeight;
-    gint TextRequiredWidth = 0, TextRequiredHeight = 0;
-    gint TextX, TextY;
-    std::list< std::string > Lines;
-    std::size_t Anchor = 0;
+    gint MessageWidth = 0; // Message's width 
+    gint MessageHeight = 0; // Message's height 
+    gint RequiredWidth, RequiredHeight; // Required height and weight 
+    gint TextRequiredWidth = 0, TextRequiredHeight = 0; // Required width for text and height for text 
+    gint TextX, TextY; // Text x and text y 
+    std::list< std::string > Lines; // String of lines 
+    std::size_t Anchor = 0; // Sets Anchor to 0 
     
+    // Uses while loop to draw message while pushing back each letter
     while(Anchor < message.length()){
         std::size_t NewPos = message.find("\n",Anchor);
         if(std::string::npos == NewPos){
@@ -1660,6 +1665,8 @@ void CApplicationData::DrawMessage(const std::string &message){
             Anchor = NewPos + 1;
         }
     }
+    
+    // For loop ensures the required width/height of text of current line  
     for(std::list< std::string >::iterator CurLine = Lines.begin(); CurLine != Lines.end(); CurLine++){
         gint LineHeight, LineWidth;
         DBlackFont.MeasureText(*CurLine, LineWidth, LineHeight); 
@@ -1669,12 +1676,14 @@ void CApplicationData::DrawMessage(const std::string &message){
         TextRequiredHeight += LineHeight + 2;
     }
     
-    RequiredWidth = TextRequiredWidth + 1;
-    RequiredWidth += DBrickTileset.TileWidth();
-    RequiredWidth = ((RequiredWidth + DBrickTileset.TileWidth() - 1) / DBrickTileset.TileWidth()) * DBrickTileset.TileWidth();
-    RequiredHeight = TextRequiredHeight;
-    RequiredHeight += DBrickTileset.TileHeight() * 2;
-    RequiredHeight = ((RequiredHeight + DBrickTileset.TileHeight() - 1) / DBrickTileset.TileHeight()) * DBrickTileset.TileHeight();
+    RequiredWidth = TextRequiredWidth + 1; // Required width 
+    RequiredWidth += DBrickTileset.TileWidth(); // Add brick tile width to req width 
+    RequiredWidth = ((RequiredWidth + DBrickTileset.TileWidth() - 1) / DBrickTileset.TileWidth()) * DBrickTileset.TileWidth(); // Sets the required width 
+    RequiredHeight = TextRequiredHeight; // Required height 
+    RequiredHeight += DBrickTileset.TileHeight() * 2; // Add brick tile height to req height 
+    RequiredHeight = ((RequiredHeight + DBrickTileset.TileHeight() - 1) / DBrickTileset.TileHeight()) * DBrickTileset.TileHeight(); // Sets required height
+    
+    // Instantiates a messagepixmap
     if(NULL != DMessagePixmap){
         gdk_pixmap_get_size(DMessagePixmap, &MessageWidth, &MessageHeight); 
     }
@@ -1685,8 +1694,9 @@ void CApplicationData::DrawMessage(const std::string &message){
         DMessagePixmap = gdk_pixmap_new(DDrawingArea->window, RequiredWidth, RequiredHeight, -1);
     }
     
-    DrawTextFrame(DMessagePixmap, RequiredWidth, RequiredHeight);
-    TextY = DBrickTileset.TileHeight() + 1;
+    DrawTextFrame(DMessagePixmap, RequiredWidth, RequiredHeight); // Draws text frame 
+    TextY = DBrickTileset.TileHeight() + 1; // Sets textY 
+    // Draws message in black font and white font
     for(std::list< std::string >::iterator CurLine = Lines.begin(); CurLine != Lines.end(); CurLine++){
         gint LineHeight, LineWidth;
         DBlackFont.MeasureText(*CurLine, LineWidth, LineHeight); 
@@ -1698,7 +1708,14 @@ void CApplicationData::DrawMessage(const std::string &message){
     
 }
 
+
+// Draws background of menu
 void CApplicationData::DrawMenuBackground(GdkPixmap *buffer, gint width, gint height){
+    /**
+     * Draws tile according to height width
+     * HeightOffset = height of indiv tile
+     * WidthOffset = width of indiv tile
+     */
     for(gint HeightOffset = 0; HeightOffset < height; HeightOffset += 8){
         if(HeightOffset & 0x8){
             for(gint WidthOffset = -(DBrickTileset.TileWidth()/2); WidthOffset < width; WidthOffset += DBrickTileset.TileWidth()){
@@ -1714,7 +1731,10 @@ void CApplicationData::DrawMenuBackground(GdkPixmap *buffer, gint width, gint he
     DrawBrickFrame(buffer, 0, 0, width, height);    
 }
 
+// Draws text frame
 void CApplicationData::DrawTextFrame(GdkPixmap *buffer, gint width, gint height){
+    
+    // Fills up tiles as long as collective height/width of tiles is less than height/width of frame
     for(gint HeightOffset = 0; HeightOffset < height; HeightOffset += D2DWallFloorTileset.TileHeight()){
         for(gint WidthOffset = 0; WidthOffset < width; WidthOffset += D2DWallFloorTileset.TileWidth()){
             D2DWallFloorTileset.DrawTile(buffer, DDrawingContext, WidthOffset, HeightOffset, D2DFloorIndices[DPlayerColor]);
@@ -1723,32 +1743,40 @@ void CApplicationData::DrawTextFrame(GdkPixmap *buffer, gint width, gint height)
     DrawBrickFrame(buffer, 0, 0, width, height);
 }
 
+// Draws brick frame
 void CApplicationData::DrawBrickFrame(GdkPixmap *buffer, gint xoff, gint yoff, gint width, gint height){
     gint BrickType = 0;
-    
+    // Draws brick frame as long as cumulative width offset is less than width
     for(gint WidthOffset = 0; WidthOffset < width; WidthOffset += DBrickTileset.TileWidth()){
         DBrickTileset.DrawTile(buffer, DDrawingContext, xoff + WidthOffset, yoff, DBrickIndices[bbtTopCenter]);
         DBrickTileset.DrawTile(buffer, DDrawingContext, xoff + WidthOffset, yoff + height - DBrickTileset.TileHeight(), DBrickIndices[bbtBottomCenter]);
     }
-    
+    // Draws brick frame as long as cumulative height is less than frame height
     for(gint HeightOffset = 0; HeightOffset < height; HeightOffset += DBrickTileset.TileHeight()){
         DBrickTileset.DrawTile(buffer, DDrawingContext, xoff, yoff + HeightOffset, BrickType ? DBrickIndices[bbtLeft1] : DBrickIndices[bbtLeft0]);
         DBrickTileset.DrawTile(buffer, DDrawingContext, xoff + width - DBrickTileset.TileWidth(), yoff + HeightOffset, BrickType ? DBrickIndices[bbtRight1] : DBrickIndices[bbtRight0]);
         BrickType++;
         BrickType &= 0x1;
     }
+    
+    // Draws the 4 corner tiles 
     DBrickTileset.DrawTile(buffer, DDrawingContext, xoff, 0, DBrickIndices[bbtTopLeft]);
     DBrickTileset.DrawTile(buffer, DDrawingContext, xoff + width - DBrickTileset.TileWidth(), yoff, DBrickIndices[bbtTopRight]);
     DBrickTileset.DrawTile(buffer, DDrawingContext, xoff + width - DBrickTileset.TileWidth(), yoff + height - DBrickTileset.TileHeight(), DBrickIndices[bbtBottomRight]);
     DBrickTileset.DrawTile(buffer, DDrawingContext, xoff, yoff + height - DBrickTileset.TileHeight(), DBrickIndices[bbtBottomLeft]);
+    // Draws the corner mortar tiles
     DMortarTileset.DrawTile(buffer, DDrawingContext, xoff, yoff - 5, DMortarIndices[bmtLeftTop2]);
     DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + width - DMortarTileset.TileWidth(), yoff - 5, DMortarIndices[bmtRightTop2]);
     DMortarTileset.DrawTile(buffer, DDrawingContext, xoff,  yoff + height -DMortarTileset.TileHeight() + 5, DMortarIndices[bmtLeftBottom2]);
     DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + width - DMortarTileset.TileWidth(), yoff + height -DMortarTileset.TileHeight() + 5, DMortarIndices[bmtRightBottom2]);
+    /**
+     * Draws mortar tiles according to frame's width
+     * Sets index according to index of mortars where center = 0
+     */
     for(gint WidthOffset = 0; WidthOffset < width; WidthOffset += DMortarTileset.TileWidth()){
-        int TopIndex, BottomIndex;
-        int CenterPoint = WidthOffset + DMortarTileset.TileWidth() / 2;
-        int BrickDistance = (width / 2 - CenterPoint) / DMortarTileset.TileWidth();
+        int TopIndex, BottomIndex; // Top index and bottom index of width 
+        int CenterPoint = WidthOffset + DMortarTileset.TileWidth() / 2; // Center point = middle of width 
+        int BrickDistance = (width / 2 - CenterPoint) / DMortarTileset.TileWidth(); // Distance of bricks  
         
         if(-3 >= BrickDistance){
             TopIndex = DMortarIndices[bmtTopRight2];
@@ -1779,9 +1807,11 @@ void CApplicationData::DrawBrickFrame(GdkPixmap *buffer, gint xoff, gint yoff, g
             BottomIndex = DMortarIndices[bmtBottomLeft2];
         }
         
-        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + WidthOffset, yoff, TopIndex);
-        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + WidthOffset, yoff + height - DMortarTileset.TileHeight(), BottomIndex);
+        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + WidthOffset, yoff, TopIndex); // Draws a row of tiles at the top index 
+        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + WidthOffset, yoff + height - DMortarTileset.TileHeight(), BottomIndex); // Draws tiles at bottom 
     }
+
+    // Determines the left index and right index of the frame
     for(gint HeightOffset = 3; HeightOffset < height-DMortarTileset.TileHeight(); HeightOffset += 8){
         int LeftIndex, RightIndex;
         int CenterPoint = HeightOffset + DMortarTileset.TileHeight() / 2;
@@ -1815,31 +1845,35 @@ void CApplicationData::DrawBrickFrame(GdkPixmap *buffer, gint xoff, gint yoff, g
             LeftIndex = DMortarIndices[bmtLeftBottom2];
             RightIndex = DMortarIndices[bmtRightBottom2];
         }
-        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff, yoff + HeightOffset, LeftIndex);
-        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + width - DMortarTileset.TileWidth(), yoff + HeightOffset, RightIndex);
+        
+        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff, yoff + HeightOffset, LeftIndex); // Draws the mortar tiles on left column 
+        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + width - DMortarTileset.TileWidth(), yoff + HeightOffset, RightIndex); // Draws tile on right col 
 
     }
 }
 
+// Lets user end game
 void CApplicationData::GameOverMode(){
 
     if(DLeftClick[DPlayerColor]){
 
-        ChangeMode(gmMainMenu);
+        ChangeMode(gmMainMenu);   // Change mode to main menu if left clicks 
     }
 }
-
+// Turns on transition mode 
 void CApplicationData::TransitionMode(){
-    gint BannerWidth = 0, BannerHeight = 0;
+    gint BannerWidth = 0, BannerHeight = 0; // Banner width / height = 0 
     bool LastBannerOffscreen = DBannerLocation < 0;
+    // If bannerpixmap exists, get its width/height 
     if(NULL != DBannerPixmap){
         gdk_pixmap_get_size(DBannerPixmap, &BannerWidth, &BannerHeight); 
     }
     DBannerLocation += DCanvasHeight / TIMEOUT_INTERVAL;
+    // If banner goes away, play sound clip
     if(LastBannerOffscreen && (0 <= DBannerLocation)){
         DSoundMixer.PlayClip(DSoundClipIndices[sctTransition], DSoundEffectVolume, 0.0);   
     }
-    
+    // If banner is higher than canvas, do transitions accordingly
     if(DBannerLocation >= DCanvasHeight){
         for(int ColorIndex = pcBlue; ColorIndex < pcMax; ColorIndex++){
             DCompletedStage[ColorIndex] = false;
@@ -1847,6 +1881,7 @@ void CApplicationData::TransitionMode(){
             DAITargetY[ColorIndex] = -1;
             DAITargetCastle[ColorIndex] = -1;
         }
+
         if(gmTransitionCannonPlacement == DGameMode){
             DNextGameMode = gmCannonPlacement;
             gettimeofday(&DCurrentStageTimeout,NULL);
@@ -1882,6 +1917,7 @@ void CApplicationData::TransitionMode(){
     }
 }
 
+// Lets user go back to main menu
 void CApplicationData::MainMenuMode(){
     DSelectedMenuItem = DCurrentY[pcNone] / (DCanvasHeight /  DMenuItems.size());
     
@@ -1907,9 +1943,9 @@ void CApplicationData::MainMenuMode(){
     }
     DLastSelectedMenuItem = DSelectedMenuItem;
 }
-
+// Lets user select map
 void CApplicationData::SelectMapMode(){
-    DSelectedMenuItem = DCurrentY[pcNone] / (DCanvasHeight /  (DTerrainMaps.size() + 1));
+    DSelectedMenuItem = DCurrentY[pcNone] / (DCanvasHeight /  (DTerrainMaps.size() + 1)); 
     
     if(DLeftClick[pcNone]){
         DSoundMixer.PlayClip(DSoundClipIndices[sctPlace], DSoundEffectVolume, 0.0);
@@ -1927,28 +1963,33 @@ void CApplicationData::SelectMapMode(){
     DLastSelectedMenuItem = DSelectedMenuItem;
 }
 
+
+// Lets user go to options menu
 void CApplicationData::OptionsMenuMode(){
     DSelectedMenuItem = DCurrentY[pcNone] / (DCanvasHeight /  DMenuItems.size());
     
     if(DLeftClick[pcNone]){
         if(0 == DSelectedMenuItem){
-            ChangeMode(gmSoundOptions);
+            ChangeMode(gmSoundOptions);  // Changes mode to sound options 
         }
         else if(1 == DSelectedMenuItem){
 
         }
         else{
-            ChangeMode(gmMainMenu);
+            ChangeMode(gmMainMenu);   // Changes to the main menu 
         }
     }
     else if((0 <= DLastSelectedMenuItem)&&(DLastSelectedMenuItem != DSelectedMenuItem)){
         DSoundMixer.PlayClip(DSoundClipIndices[sctTick], DSoundEffectVolume, 0.0);
     }
-    DLastSelectedMenuItem = DSelectedMenuItem;
+    DLastSelectedMenuItem = DSelectedMenuItem; 
 }
 
+/**
+ *  Lets user choose sound options
+ */
 void CApplicationData::SoundOptionsMode(){
-    DSelectedMenuItem = DCurrentY[pcNone] / (DCanvasHeight /  3);
+    DSelectedMenuItem = DCurrentY[pcNone] / (DCanvasHeight /  3); 
     DSelectedMenuItem *= 2;
     if(DCurrentX[pcNone] > (DCanvasWidth/2)){
         DSelectedMenuItem++;
