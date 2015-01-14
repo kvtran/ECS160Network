@@ -3328,7 +3328,7 @@ bool CApplicationData::CleanUpWallEdges(){
  *
  * @param x,y References to x and y coordinates
  * @return If the bounds are valid
- s*/
+ */
 bool CApplicationData::BoundsCheck(int &xindex, int &yindex){
     bool ValidBounds = true;
     if(0 > xindex){
