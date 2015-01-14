@@ -3574,9 +3574,7 @@ int CApplicationData::Init(int argc, char *argv[]){
      */
     gtk_init(&argc, &argv);
     
-    /**
-     * Create a new main window 
-     */
+    // Create a new main window.
     DMainWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     
     /** 
@@ -3601,56 +3599,38 @@ int CApplicationData::Init(int argc, char *argv[]){
      */
     g_signal_connect(DMainWindow, "destroy", G_CALLBACK(MainWindowDestroyCallback), this);
     
-    /**
-     * Allows GTK to handle keyboard inputs
-     */
+    // Allows GTK to handle keyboard inputs.
     g_signal_connect(DMainWindow, "key-press-event", G_CALLBACK(MainWindowKeyPressEventCallback), this);
     
-    /**
-     * Sets the border width of the window. 
-     */
+    // Sets the border width of the window. 
     gtk_container_set_border_width(GTK_CONTAINER(DMainWindow), 10);
     
-    /**
-     * Creates a drawing surface
-     */
+    // Creates a drawing surface.
     DDrawingArea = gtk_drawing_area_new();
 
     gtk_drawing_area_size(GTK_DRAWING_AREA(DDrawingArea), INITIAL_MAP_WIDTH, INITIAL_MAP_HEIGHT);
     
-    /**
-     * Add drawing surface to main window
-     */
+    // Add drawing surface to main window.
     gtk_container_add(GTK_CONTAINER(DMainWindow), DDrawingArea);
     
-    /**
-     * Signal connections that allow updates on and interactions with the main window
-     */
+    // Signal connections that allow updates on and interactions with the main window.
     gtk_signal_connect(GTK_OBJECT(DDrawingArea), "expose_event", G_CALLBACK(DrawingAreaExposeCallback), this);
     gtk_signal_connect(GTK_OBJECT(DDrawingArea), "button_press_event", G_CALLBACK(DrawingAreaButtonPressEventCallback), this);
     gtk_signal_connect(GTK_OBJECT(DDrawingArea), "motion_notify_event", G_CALLBACK(DrawingAreaMotionNotifyEventCallback), this);
 
-    /**
-     * Describes what events the main window can receive
-     */
+    // Describes what events the main window can receive.
     gtk_widget_set_events(DDrawingArea, GDK_EXPOSURE_MASK | GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK);
 
-    /**
-     * Makes cursor invisible over main window
-     */
+    // Makes cursor invisible over main window.
     DBlankCursor = gdk_cursor_new(GDK_BLANK_CURSOR);
 
-    /**
-     * Show all widgets so they are displayed
-     */
+    // Show all widgets so they are displayed.
     gtk_widget_show(DDrawingArea);
     gtk_widget_show(DMainWindow);
     
     gdk_window_set_cursor(DDrawingArea->window, DBlankCursor); 
     
-    /**
-     * MainData.DDrawingContext = gdk_gc_new(MainData.DDrawingArea->window);
-     */
+    // MainData.DDrawingContext = gdk_gc_new(MainData.DDrawingArea->window);
     DDrawingContext = DDrawingArea->style->fg_gc[gtk_widget_get_state(DDrawingArea)];
     
     /**
@@ -3747,7 +3727,7 @@ int CApplicationData::Init(int argc, char *argv[]){
     
     /**
      * The following initializes the D2D and D3D tile indices.
-     * This allows GTK to find the right tile to display
+     * This allows GTK to find the right tile to display.
      */
     D2DCastleIndices[pcNone] = D2DCastleCannonTileset.FindTile("castle-none");
     D2DCastleIndices[pcBlue] = D2DCastleCannonTileset.FindTile("castle-blue");
@@ -3907,22 +3887,16 @@ int CApplicationData::Init(int argc, char *argv[]){
     DMortarIndices[bmtLeftTop1] = DMortarTileset.FindTile("mortar-lt1");
     DMortarIndices[bmtLeftTop2] = DMortarTileset.FindTile("mortar-lt2");
     
-    /** 
-     * Opens game maps directory
-     */
+    // Opens game maps directory.
     MapDirectory = opendir(MapPath.c_str());
 
-    /**
-     * Checks if game maps directory opened correctly
-     */
+    // Checks if game maps directory opened correctly.
     if(NULL == MapDirectory){
         printf("Failed to open directory.\n");
         return -1;
     }
 
-    /**
-     * While loop to load all map files
-     */
+    // While loop to load all map files
     while((DirectoryEntry = readdir( MapDirectory ))){
         std::string Filename = MapPath + "/";
         Filename += DirectoryEntry->d_name;
@@ -3941,34 +3915,24 @@ int CApplicationData::Init(int argc, char *argv[]){
         }
     }
 
-    /**
-     * Close the game maps directory
-     */
+    // Close the game maps directory.
     closedir(MapDirectory);
 
-    /**
-     * If no maps were loaded, exit the app.
-     */
+    // If no maps were loaded, exit the app.
     if(0 == DTerrainMaps.size()){
         printf("No maps loaded.\n");
         return 0;
     }
 
-    /**
-     * Initializes window size scaling to 1.
-     */
+    // Initializes window size scaling to 1.
     DScaling = 1;
     
-    /**
-     * Loads the main menu.
-     */
+    // Loads the main menu.
     LoadTerrainMap(0);
     ChangeMode(gmMainMenu);
     DrawMenu();
     
-    /**
-     * gdk draw functions for generating window contents.
-     */
+    // gdk draw functions for generating window contents.
     gdk_draw_pixmap(DPreviousWorkingBufferPixmap, DDrawingContext, DWorkingBufferPixmap, 0, 0, 0, 0, -1, -1);
     gdk_draw_pixmap(DDoubleBufferPixmap, DDrawingContext, DWorkingBufferPixmap, 0, 0, 0, 0, -1, -1);
     gdk_draw_pixmap(DDrawingArea->window, DDrawingContext, DDoubleBufferPixmap, 0, 0, 0, 0, -1, -1);
@@ -3998,9 +3962,7 @@ int CApplicationData::Init(int argc, char *argv[]){
 
 int main(int argc, char *argv[]){
 
-    /**
-     * Create app object.
-     */
+    // Create app object.
     CApplicationData MainData;
     int ReturnValue;
 
@@ -4015,9 +3977,7 @@ int main(int argc, char *argv[]){
     printf("distribution for educational purposes only and this copyright notice does not\n"); 
     printf("attempt to claim any ownership of this material.\n");
     
-    /**
-     * Initializes and runs the app.
-     */
+    // Initializes and runs the app.
     ReturnValue = MainData.Init(argc, argv);
 
     return ReturnValue;
