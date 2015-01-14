@@ -1595,7 +1595,7 @@ void CApplicationData::DrawBanner(const std::string &message){
         gdk_pixmap_get_size(DBannerPixmap, &BannerWidth, &BannerHeight); 
     }
     
-    //Creates Bannerpixmap if banner's dimensions don't mix
+    // Creates Bannerpixmap if banner's dimensions don't mix
     if((BannerWidth != RequiredWidth)||(BannerHeight != RequiredHeight)){
         if(NULL != DBannerPixmap){
              g_object_unref(DBannerPixmap);
@@ -1610,7 +1610,7 @@ void CApplicationData::DrawBanner(const std::string &message){
     DWhiteFont.DrawText(DBannerPixmap, DDrawingContext, TextX, TextY, message); // Draws text in white font 
 }
 
-//Draws message 
+// Draws message 
 void CApplicationData::DrawMessage(const std::string &message){
     gint MessageWidth = 0; // Message's width 
     gint MessageHeight = 0; // Message's height 
@@ -1743,7 +1743,7 @@ void CApplicationData::DrawBrickFrame(GdkPixmap *buffer, gint xoff, gint yoff, g
     for(gint WidthOffset = 0; WidthOffset < width; WidthOffset += DMortarTileset.TileWidth()){
         int TopIndex, BottomIndex; // Top index and bottom index of width 
         int CenterPoint = WidthOffset + DMortarTileset.TileWidth() / 2; // Center point = middle of width 
-        int BrickDistance = (width / 2 - CenterPoint) / DMortarTileset.TileWidth(); // distance of bricks  
+        int BrickDistance = (width / 2 - CenterPoint) / DMortarTileset.TileWidth(); // Distance of bricks  
         
         if(-3 >= BrickDistance){
             TopIndex = DMortarIndices[bmtTopRight2];
@@ -1931,7 +1931,7 @@ void CApplicationData::SelectMapMode(){
 }
 
 
-//Lets user go to options menu
+// Lets user go to options menu
 void CApplicationData::OptionsMenuMode(){
     DSelectedMenuItem = DCurrentY[pcNone] / (DCanvasHeight /  DMenuItems.size());
     
@@ -1953,7 +1953,7 @@ void CApplicationData::OptionsMenuMode(){
 }
 
 /**
- *  lets user choose sound options
+ *  Lets user choose sound options
  */
 void CApplicationData::SoundOptionsMode(){
     DSelectedMenuItem = DCurrentY[pcNone] / (DCanvasHeight /  3); 
