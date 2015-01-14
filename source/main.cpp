@@ -2808,6 +2808,7 @@ void CApplicationData::SelectCastleAI(){
     }
 }
 
+// This function chooses which tile the AI will place the cannon at
 void CApplicationData::CannonPlacementAI(){
     for(int ColorIndex = pcBlue; ColorIndex < pcBlue + DPlayerCount; ColorIndex++){
         if(DPlayerIsAI[ColorIndex]){
@@ -2860,6 +2861,10 @@ void CApplicationData::CannonPlacementAI(){
     }
 }
 
+/**
+ * This is the AI that determines how the computer will rebuild walls after they have
+ * been destroyed by the player's cannons
+ */
 void CApplicationData::RebuildAI(){
     for(int ColorIndex = pcBlue; ColorIndex < pcBlue + DPlayerCount; ColorIndex++){
         if(DPlayerIsAI[ColorIndex]){
@@ -3006,6 +3011,7 @@ void CApplicationData::RebuildAI(){
     }
 }
 
+// This is AI for the computer to select a location to fire it's cannon at
 void CApplicationData::BattleAI(){
     for(int ColorIndex = pcBlue; ColorIndex < pcBlue + DPlayerCount; ColorIndex++){
         if(DPlayerIsAI[ColorIndex]){
@@ -3023,6 +3029,12 @@ void CApplicationData::BattleAI(){
     }
 }
 
+/**
+ * This function checks which castles have been surrounded
+ * If the castle is not surrounded, it is marked as unclaimed
+ * If the castle is surrounded, it will color code the castle and surroundings
+ * based on the user/computer's color
+ */
 void CApplicationData::CheckSurroundedCastles(){
     // Check surrounding
     for(int YPos = 0; YPos < DMapHeight; YPos++){
@@ -3083,6 +3095,7 @@ void CApplicationData::CheckSurroundedCastles(){
     }
 }
 
+// This code checks to see if a cannon is placed on top of a castle's location
 bool CApplicationData::CannonCastleInterfere(int xindex, int yindex, int width, int height){
     std::vector< SMapLocation >::iterator Iterator;
     
@@ -3142,6 +3155,7 @@ bool CApplicationData::CannonCastleInterfere(int xindex, int yindex, int width, 
     return false;
 }
 
+// This code checks whether or not the cannon is placed in a valid tile
 bool CApplicationData::ValidCannonPlacement(int colorindex, int xindex, int yindex){
     EConstructionTileType ConTileType;
     
@@ -3170,6 +3184,7 @@ bool CApplicationData::ValidCannonPlacement(int colorindex, int xindex, int yind
     return !CannonCastleInterfere(xindex, yindex, 2, 2);   
 }
 
+// This checks if the wall is placed in a valid tile
 bool CApplicationData::ValidWallPlacement(int colorindex, int xindex, int yindex){
     int XPos, YPos;
     for(int WallYPos = 0; WallYPos < DWallShape[colorindex].Height(); WallYPos++){
