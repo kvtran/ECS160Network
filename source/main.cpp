@@ -3237,6 +3237,11 @@ bool CApplicationData::ValidWallPlacement(int colorindex, int xindex, int yindex
     return true;
 }
 
+/**
+ * Expands onto unclaimed land
+ *
+ * @param x,y Coordinates of the position where expansion outward is desired
+ */
 void CApplicationData::ExpandUnclaimed(int xpos, int ypos){
     bool NValid, EValid, SValid, WValid;
     
@@ -3294,6 +3299,9 @@ void CApplicationData::ExpandUnclaimed(int xpos, int ypos){
 
 }
 
+/**
+ * Cleans up the wall edges that have been destroyed
+ */
 bool CApplicationData::CleanUpWallEdges(){
     bool WallsRemoved = false;
     
@@ -3348,6 +3356,12 @@ bool CApplicationData::CleanUpWallEdges(){
     return WallsRemoved;
 }
 
+/**
+ * Checks if coordinates given are nonnegative or within the bounds of the map.
+ *
+ * @param x,y References to x and y coordinates
+ * @return If the bounds are valid
+ */
 bool CApplicationData::BoundsCheck(int &xindex, int &yindex){
     bool ValidBounds = true;
     if(0 > xindex){
@@ -3369,6 +3383,9 @@ bool CApplicationData::BoundsCheck(int &xindex, int &yindex){
     return ValidBounds;
 }
 
+/**
+ * Plays tick-tock sound if within threshold of stage timeout.
+ */
 void CApplicationData::PlayTickTockSound(){
     int MSUntilDeadline = MiliSecondsUntilDeadline(DCurrentStageTimeout);
     int LastTickTockMS = -MiliSecondsUntilDeadline(DLastTickTockTime);
@@ -3399,6 +3416,12 @@ void CApplicationData::PlayTickTockSound(){
     }    
 }
 
+/**
+ * Determines if a player has been conquered (lost the game).
+ * Determines by examining how many surrounded castles still exist.
+ * If there are no more castles for the player, the player is conquered.
+ * @return Number of living players
+ */
 int CApplicationData::DetermineConquered(){
     int LivingPlayers = 0;
     
@@ -3425,6 +3448,9 @@ int CApplicationData::DetermineConquered(){
     return LivingPlayers;
 }
 
+/**
+ * Resets the map
+ */
 void CApplicationData::ResetMap(){
     for(int Index = 0; Index < DConstructionTiles.size(); Index++){
         std::vector< EConstructionTileType >::iterator Iterator;
@@ -3464,8 +3490,13 @@ void CApplicationData::ResetMap(){
     DCurrentStageTimeout.tv_sec += SELECT_TIME;
 }
 
+/**
+ * Loads the desired map based on the index given.
+ *
+ * @param index 
+ * @returns Exits if the index is negative or the index > terrain maps array size
+ */
 void CApplicationData::LoadTerrainMap(int index){
-
     if((0 > index)||(DTerrainMaps.size() <= index)){
         return;   
     }
@@ -3510,8 +3541,10 @@ void CApplicationData::LoadTerrainMap(int index){
     }
 }
 
+/**
+ * Resizes the canvas
+ */
 void CApplicationData::ResizeCanvases(){
-    // Resize the canvas
     gtk_drawing_area_size(GTK_DRAWING_AREA(DDrawingArea), DCanvasWidth * DScaling, DCanvasHeight * DScaling);
     
     if(NULL != DDoubleBufferPixmap){
