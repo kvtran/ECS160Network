@@ -810,11 +810,26 @@ gboolean CApplicationData::MainWindowKeyPressEvent(GtkWidget *widget, GdkEventKe
     return TRUE;
 }
 
+    /**
+     * Redraws window after refocusing on it.
+     * If another window is placed on top of the game window, this redraws that game window.
+     *
+     * @param widget GTK Widget object
+     * @param event Event object to indicate location of redrawing
+     * @return Boolean changed to false to indicate it has finished drawing
+     */
 gboolean CApplicationData::DrawingAreaExpose(GtkWidget *widget, GdkEventExpose *event){
     gdk_draw_pixmap(widget->window, widget->style->fg_gc[gtk_widget_get_state (widget)], DDoubleBufferPixmap, event->area.x, event->area.y, event->area.x, event->area.y, event->area.width, event->area.height);
     return FALSE;
 }
 
+    /**
+     * Checks if a mouse button is clicked, and sets DRightClick for player and pcNone to true.
+     *
+     * @param widget GTK Widget object
+     * @param event Button object to indicate when clicked
+     * @return Boolean changed to true
+     */
 gboolean CApplicationData::DrawingAreaButtonPressEvent(GtkWidget *widget, GdkEventButton *event){
     if(1 == event->button){
         if(GDK_CONTROL_MASK & event->state){
@@ -830,6 +845,13 @@ gboolean CApplicationData::DrawingAreaButtonPressEvent(GtkWidget *widget, GdkEve
     return TRUE;
 }
 
+    /**
+     * Checks if the window is moved, and sets the events to scale properly for drawing.
+     *
+     * @param widget GTK Widget object
+     * @param event Event of motion object
+     * @return Boolean changed to true
+     */
 gboolean CApplicationData::DrawingAreaMotionNotifyEvent(GtkWidget *widget, GdkEventMotion *event){
     int EventX, EventY;
     EventX = event->x;
@@ -852,6 +874,9 @@ gboolean CApplicationData::DrawingAreaMotionNotifyEvent(GtkWidget *widget, GdkEv
     return TRUE;
 }
 
+    /**
+     * Draws the main menu.
+     */
 void CApplicationData::DrawMenu(){
     gint TotalTextHeight, TextX, TextY, TextWidth, TextHeight;
     gint RequiredWidth, RequiredHeight;
@@ -901,6 +926,9 @@ void CApplicationData::DrawMenu(){
     
 }
 
+    /**
+     * Draws the sound options menu.
+     */
 void CApplicationData::DrawSoundOptions(){
     gint TextX, TextY, TextWidth, TextHeight, MaxWidth, MaxHeight;
     gint RequiredWidth, RequiredHeight;
@@ -1040,7 +1068,9 @@ void CApplicationData::DrawSoundOptions(){
     }
 }
 
-
+    /**
+     * Draws the map selection menu.
+     */
 void CApplicationData::DrawSelectMap(){
     gint TextX, TextY, TextWidth, TextHeight;
     gint RequiredWidth, RequiredHeight;
@@ -1117,6 +1147,9 @@ void CApplicationData::DrawSelectMap(){
     }
 }
 
+    /**
+     * Draws a 2D frame on the screen.
+     */
 void CApplicationData::Draw2DFrame(){
     gdk_draw_pixmap(DWorkingBufferPixmap, DDrawingContext, D2DTerrainPixmap, 0, 0, 0, 0, -1, -1);
 
