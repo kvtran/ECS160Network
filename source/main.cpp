@@ -3653,7 +3653,6 @@ int CApplicationData::Init(int argc, char *argv[]){
      */
     DDrawingContext = DDrawingArea->style->fg_gc[gtk_widget_get_state(DDrawingArea)];
     
-    
     /**
      * The following if statements checks if all “.dat” files have loaded correctly.
      * Else returns error and ends the program.
@@ -3738,7 +3737,6 @@ int CApplicationData::Init(int argc, char *argv[]){
         printf("Failed to load sound clips.\n");
         return -1;
     }
-    
 
     /**
      * Sets the number of frames in certain animations.
@@ -3806,7 +3804,6 @@ int CApplicationData::Init(int argc, char *argv[]){
         
     }
     D3DDamagedGroundIndex = D3DTerrainTileset.FindTile("hole-0");
-    
     
     D3DExplosionIndices[etWallExplosion0] = D3DExplosionTileset.FindTile("explosion-0");
     D3DExplosionIndices[etWallExplosion1] = D3DExplosionTileset.FindTile("explosion-alt-0");
