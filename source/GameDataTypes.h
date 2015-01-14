@@ -15,13 +15,14 @@
     attempt to claim any ownership of this material.
 */
 
+// Enum for player color
 typedef enum{
-    pcNone = 0,
-    pcBlue,
-    pcRed,
-    pcYellow,
-    pcMax
-} EPlayerColor, *EPlayerColroRef;
+    pcNone = 0, // No players
+    pcBlue, // Player color: Blue
+    pcRed, // Player color: Red
+    pcYellow, // Player color: Yellow
+    pcMax // Max player count
+} EPlayerColor, *EPlayerColorRef;
 
 #endif
 
