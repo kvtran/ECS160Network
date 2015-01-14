@@ -1,15 +1,15 @@
 /*
     Copyright (c) 2015, Christopher Nitta
     All rights reserved.
-    
-    All source material (source code, images, sounds, etc.) have been provided to 
-    University of California, Davis students of course ECS 160 for educational 
-    purposes. It may not be distributed beyond those enrolled in the course without 
-    prior permission from the copyright holder. 
-    
-    Some sound files, sound fonts, and midi files have been included that were 
-    freely available via internet sources. They have been included in this 
-    distribution for educational purposes only and this copyright notice does not 
+
+    All source material (source code, images, sounds, etc.) have been provided to
+    University of California, Davis students of course ECS 160 for educational
+    purposes. It may not be distributed beyond those enrolled in the course without
+    prior permission from the copyright holder.
+
+    Some sound files, sound fonts, and midi files have been included that were
+    freely available via internet sources. They have been included in this
+    distribution for educational purposes only and this copyright notice does not
     attempt to claim any ownership of this material.
 */
 #include "SoundLibraryMixer.h"
@@ -28,10 +28,11 @@ CSoundLibraryMixer::CSoundLibraryMixer(){
     DNextToneID = 0;
     Pa_Initialize();
     pthread_mutex_init(&DMutex, NULL);
+    // Set up 128 clip ids
     for(int Index = 0; Index < 128; Index++){
-        DFreeClipIDs.push_back(Index);   
+        DFreeClipIDs.push_back(Index);
     }
-    
+
     DFluidSettings = NULL;
     DFluidSynthesizer = NULL;
     DFluidPlayer = NULL;
@@ -47,7 +48,7 @@ CSoundLibraryMixer::~CSoundLibraryMixer(){
         DStream = NULL;
     }
     if(NULL != DSineWave){
-        delete [] DSineWave;    
+        delete [] DSineWave;
     }
     Pa_Terminate();
     pthread_mutex_destroy(&DMutex);
@@ -83,49 +84,51 @@ int CSoundLibraryMixer::FindSong(const std::string &songname) const{
 
 int CSoundLibraryMixer::ClipDurationMS(int index){
     if((0 > index)||(index >= DSoundClips.size())){
-        return 0;    
+        return 0;
     }
     return (DSoundClips[index].TotalFrames() * 1000) / DSoundClips[index].SampleRate();
 }
 
 int CSoundLibraryMixer::TimestepCallback(const void *in, void *out, unsigned long frames, const PaStreamCallbackTimeInfo* timeinfo, PaStreamCallbackFlags status, void *data){
     CSoundLibraryMixer *Mixer = (CSoundLibraryMixer *)data;
-    
+
     return Mixer->Timestep(out, frames, timeinfo, status);
 }
 
 int CSoundLibraryMixer::Timestep(void *out, unsigned long frames, const PaStreamCallbackTimeInfo* timeinfo, PaStreamCallbackFlags status){
     float *DataPtr = (float *)out;
-    
+
     memset(DataPtr, 0, sizeof(float) * frames * 2);
-    pthread_mutex_lock(&DMutex);
+    pthread_mutex_lock(&DMutex); // Lock mutex before performing timestep
+    // Perform timestep on clips currently playing
     for(std::list< SClipStatus >::iterator ClipIterator = DClipsInProgress.begin(); ClipIterator != DClipsInProgress.end(); ){
         bool Advance = true;
-        
+
         DSoundClips[ClipIterator->DIndex].MixStereoClip(DataPtr, ClipIterator->DOffset, frames, ClipIterator->DVolume, ClipIterator->DRightBias);
-        
+
         ClipIterator->DOffset += frames;
         if(ClipIterator->DOffset >= DSoundClips[ClipIterator->DIndex].TotalFrames()){
-            DFreeClipIDs.push_back(ClipIterator->DIdentification);   
+            DFreeClipIDs.push_back(ClipIterator->DIdentification);
             ClipIterator = DClipsInProgress.erase(ClipIterator);
             Advance = false;
         }
         if(Advance){
-            ClipIterator++;   
+            ClipIterator++;
         }
     }
-    
+
+    // Perform timestep on tones currently playing
     for(std::list< SToneStatus >::iterator ToneIterator = DTonesInProgress.begin(); ToneIterator != DTonesInProgress.end(); ){
         bool Advance = true;
         float *CurOutPtr = DataPtr;
-        
+
         for(int Frame = 0; Frame < frames; Frame++){
             int SineIndex = ToneIterator->DCurrentStep;
-            
+
             if(0.5 <= (ToneIterator->DCurrentStep - SineIndex)){
                 SineIndex++;
                 if(DSampleRate <= SineIndex){
-                    SineIndex = 0;   
+                    SineIndex = 0;
                 }
             }
             *CurOutPtr++ += ToneIterator->DVolume * (1.0 - ToneIterator->DRightBias) * DSineWave[SineIndex];
@@ -151,19 +154,19 @@ int CSoundLibraryMixer::Timestep(void *out, unsigned long frames, const PaStream
             }
             if(1.0 < ToneIterator->DRightBias){
                 ToneIterator->DRightBias = -1.0;
-                ToneIterator->DRightShift = 0.0;                
+                ToneIterator->DRightShift = 0.0;
             }
-        }        
+        }
         if(Advance){
-            ToneIterator++;    
+            ToneIterator++;
         }
         else{
-            DFreeToneIDs.push_back(ToneIterator->DIdentification);   
+            DFreeToneIDs.push_back(ToneIterator->DIdentification);
             ToneIterator = DTonesInProgress.erase(ToneIterator);
         }
     }
-    
-    pthread_mutex_unlock(&DMutex);    
+
+    pthread_mutex_unlock(&DMutex); // Unlock mutex to free up thread after timestep
     frames *= 2;
     for(int Frame = 0; Frame < frames; Frame++){
         if(-1.0 > *DataPtr){
@@ -174,7 +177,7 @@ int CSoundLibraryMixer::Timestep(void *out, unsigned long frames, const PaStream
         }
         DataPtr++;
     }
-    
+
     return paContinue;
 }
 
@@ -185,52 +188,57 @@ bool CSoundLibraryMixer::LoadLibrary(const std::string &filename){
     FILE *FilePointer;
     bool ReturnStatus = false;
     std::string SoundFontName;
-    
+
+    // Load library file
     FilePointer = fopen(filename.c_str(), "r");
     if(NULL == FilePointer){
-        return false;   
+        return false;
     }
-    if(-1 == getline(&TempBuffer, &BufferSize, FilePointer)){
-        goto LoadLibraryExit1;
+    if(-1 == getline(&TempBuffer, &BufferSize, FilePointer)){ 
+        goto LoadLibraryExit1; // Close file pointer and returns false
     }
+    // Get number of clips
     sscanf(TempBuffer,"%d", &TotalClips);
     DSoundClips.resize(TotalClips);
+    // For each clip index
     for(int Index = 0; Index < TotalClips; Index++){
         if(-1 == getline(&TempBuffer, &BufferSize, FilePointer)){
-            goto LoadLibraryExit2;
-        }    
+            goto LoadLibraryExit2; // Clear sound clips and lookup mappings
+        }
         LastChar = strlen(TempBuffer) - 1;
-        while((0 <= LastChar)&&(('\r' == TempBuffer[LastChar])||('\n' == TempBuffer[LastChar]))){
+        while((0 <= LastChar)&&(('\r' == TempBuffer[LastChar])||('\n' == TempBuffer[LastChar]))){ // Remove carriage return character and line break character from end of line
             TempBuffer[LastChar] = '\0';
             LastChar--;
         }
+        // Set mapping to index for name
         DMapping[std::string(TempBuffer)] = Index;
         if(-1 == getline(&TempBuffer, &BufferSize, FilePointer)){
             goto LoadLibraryExit2;
-        }    
+        }
         LastChar = strlen(TempBuffer) - 1;
         while((0 <= LastChar)&&(('\r' == TempBuffer[LastChar])||('\n' == TempBuffer[LastChar]))){
             TempBuffer[LastChar] = '\0';
             LastChar--;
         }
+        // Load the clip
         if(!DSoundClips[Index].Load(TempBuffer)){
-            goto LoadLibraryExit2;    
+            goto LoadLibraryExit2;
         }
     }
     DSampleRate = DSoundClips[0].SampleRate();
     for(int Index = 1; Index < TotalClips; Index++){
         if(DSoundClips[0].SampleRate() != DSoundClips[Index].SampleRate()){
-            goto LoadLibraryExit2;    
+            goto LoadLibraryExit2;
         }
     }
     if(NULL != DSineWave){
-        delete [] DSineWave;    
+        delete [] DSineWave;
     }
     DSineWave = new float[DSampleRate];
     for(int Index = 0; Index < DSampleRate; Index++){
         DSineWave[Index] = sin( ((double)Index/(double)DSampleRate) * M_PI * 2.0 );
     }
-    
+
     if(-1 == getline(&TempBuffer, &BufferSize, FilePointer)){
         goto LoadLibraryExit2;
     }
@@ -248,22 +256,25 @@ bool CSoundLibraryMixer::LoadLibrary(const std::string &filename){
         printf("Failed to read line\n");
         goto LoadLibraryExit2;
     }
+    // Read number of songs
     sscanf(TempBuffer,"%d", &TotalSongs);
     DMusicFilenames.resize(TotalSongs);
+    // For each song index
     for(int Index = 0; Index < TotalSongs; Index++){
         if(-1 == getline(&TempBuffer, &BufferSize, FilePointer)){
             printf("Failed to read line2\n");
             goto LoadLibraryExit3;
-        }    
+        }
         LastChar = strlen(TempBuffer) - 1;
         while((0 <= LastChar)&&(('\r' == TempBuffer[LastChar])||('\n' == TempBuffer[LastChar]))){
             TempBuffer[LastChar] = '\0';
             LastChar--;
         }
+        // Set mapping
         DMusicMapping[std::string(TempBuffer)] = Index;
         if(-1 == getline(&TempBuffer, &BufferSize, FilePointer)){
             goto LoadLibraryExit2;
-        }    
+        }
         LastChar = strlen(TempBuffer) - 1;
         while((0 <= LastChar)&&(('\r' == TempBuffer[LastChar])||('\n' == TempBuffer[LastChar]))){
             TempBuffer[LastChar] = '\0';
@@ -271,11 +282,11 @@ bool CSoundLibraryMixer::LoadLibrary(const std::string &filename){
         }
         if(!fluid_is_midifile(TempBuffer)){
             printf("%s is not a midi file!\n", TempBuffer);
-            goto LoadLibraryExit3;    
+            goto LoadLibraryExit3;
         }
         DMusicFilenames[Index] = std::string(TempBuffer);
     }
-       
+
     DFluidSettings = new_fluid_settings();
     fluid_settings_setstr(DFluidSettings, "audio.driver", "portaudio");
     DFluidSynthesizer = new_fluid_synth(DFluidSettings);
@@ -290,10 +301,10 @@ bool CSoundLibraryMixer::LoadLibrary(const std::string &filename){
     if(paNoError != Pa_StartStream(DStream)){
         goto LoadLibraryExit3;
     }
-    
+
     fclose(FilePointer);
     return true;
-    
+
 LoadLibraryExit3:
     DMusicFilenames.clear();
 LoadLibraryExit2:
@@ -306,7 +317,7 @@ LoadLibraryExit1:
 
 int CSoundLibraryMixer::PlayClip(int index, float volume, float rightbias){
     SClipStatus TempClipStatus;
-    
+
     if((0 > index)||(DSoundClips.size() <= index)){
         fprintf(stderr,"Invalid Clip %d!!!!!\n",index);
         return -1;
@@ -315,23 +326,23 @@ int CSoundLibraryMixer::PlayClip(int index, float volume, float rightbias){
     TempClipStatus.DOffset = 0;
     TempClipStatus.DVolume = volume;
     TempClipStatus.DRightBias = rightbias;
-    
+
     pthread_mutex_lock(&DMutex);
     if(DFreeClipIDs.size()){
         TempClipStatus.DIdentification = DFreeClipIDs.front();
         DFreeClipIDs.pop_front();
     }
     else{
-        TempClipStatus.DIdentification = DNextClipID++;    
+        TempClipStatus.DIdentification = DNextClipID++;
     }
     DClipsInProgress.push_back(TempClipStatus);
-    pthread_mutex_unlock(&DMutex);  
+    pthread_mutex_unlock(&DMutex);
     return TempClipStatus.DIdentification;
 }
 
 int CSoundLibraryMixer::PlayTone(float freq, float freqdecay, float volume, float volumedecay, float rightbias, float rightshift){
     SToneStatus TempToneStatus;
-    
+
 
     TempToneStatus.DCurrentFrequency = freq;
     TempToneStatus.DCurrentStep = 0;
@@ -340,23 +351,23 @@ int CSoundLibraryMixer::PlayTone(float freq, float freqdecay, float volume, floa
     TempToneStatus.DVolumeDecay = volumedecay / DSampleRate;
     TempToneStatus.DRightBias = rightbias;
     TempToneStatus.DRightShift = rightshift / DSampleRate;
-    
+
     pthread_mutex_lock(&DMutex);
     if(DFreeToneIDs.size()){
         TempToneStatus.DIdentification = DFreeToneIDs.front();
         DFreeToneIDs.pop_front();
     }
     else{
-        TempToneStatus.DIdentification = DNextToneID++;    
+        TempToneStatus.DIdentification = DNextToneID++;
     }
     DTonesInProgress.push_back(TempToneStatus);
-    pthread_mutex_unlock(&DMutex);  
+    pthread_mutex_unlock(&DMutex);
     return TempToneStatus.DIdentification;
 }
 
 void CSoundLibraryMixer::StopTone(int id){
     std::list< SToneStatus >::iterator ToneIterator;
-    
+
     pthread_mutex_lock(&DMutex);
     ToneIterator = DTonesInProgress.begin();
     while(ToneIterator != DTonesInProgress.end()){
@@ -367,13 +378,13 @@ void CSoundLibraryMixer::StopTone(int id){
         }
         ToneIterator++;
     }
-    pthread_mutex_unlock(&DMutex);  
+    pthread_mutex_unlock(&DMutex);
 }
 
 bool CSoundLibraryMixer::ClipCompleted(int id){
     std::list< int >::iterator ClipIDIterator;
     bool FoundID = false;
-    
+
     pthread_mutex_lock(&DMutex);
     ClipIDIterator = DFreeClipIDs.begin();
     while(ClipIDIterator != DFreeClipIDs.end()){
@@ -383,17 +394,17 @@ bool CSoundLibraryMixer::ClipCompleted(int id){
         }
         ClipIDIterator++;
     }
-    pthread_mutex_unlock(&DMutex); 
+    pthread_mutex_unlock(&DMutex);
     return FoundID;
 }
 
 void CSoundLibraryMixer::PlaySong(int index, float volume){
     if((0 > index)||(index >= DMusicFilenames.size())){
-        return;   
+        return;
     }
     switch(fluid_player_get_status(DFluidPlayer)){
         case FLUID_PLAYER_PLAYING:  fluid_player_stop(DFluidPlayer);
-        case FLUID_PLAYER_READY:    
+        case FLUID_PLAYER_READY:
         default:                    delete_fluid_player(DFluidPlayer);
                                     DFluidPlayer = new_fluid_player(DFluidSynthesizer);
                                     break;
@@ -412,4 +423,3 @@ void CSoundLibraryMixer::StopSong(){
 void CSoundLibraryMixer::SongVolume(float volume){
     fluid_synth_set_gain(DFluidSynthesizer, 0.2 * volume);
 }
-
