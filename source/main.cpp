@@ -2585,7 +2585,7 @@ void CApplicationData::BattleMode(){
                 Advance = false;
                 Cannonball = DCannonballTrajectories.erase(Cannonball);
             }
-        
+        }
         // move the cannonball iterator forward to next frame
         if(Advance){
             Cannonball++;    
