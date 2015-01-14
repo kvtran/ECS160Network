@@ -1200,9 +1200,8 @@ void CApplicationData::Draw2DFrame(){
         }
     }
 
-    /**
-     * For each active player, draws cannons which that player has placed.
-     */
+
+    //For each active player, draws cannons which that player has placed.
     for(int Index = pcBlue; Index < pcMax; Index++){
         std::vector< SMapLocation >::iterator Iterator = DCannonLocations[Index].begin();
         
@@ -1227,10 +1226,7 @@ void CApplicationData::Draw2DFrame(){
         }
     }
 
-    /**
-     * If the current game mode is Rebuild, then draw tile currently held by each player.
-     *
-     */
+    //If the current game mode is Rebuild, then draw tile currently held by each player.
     else if(gmRebuild == DGameMode){
         for(int ColorIndex = pcBlue; ColorIndex < pcBlue + DPlayerCount; ColorIndex++){
             if((!DCompletedStage[ColorIndex])&&(DGameMode == DNextGameMode)){
@@ -1262,9 +1258,7 @@ void CApplicationData::Draw2DFrame(){
                     WallIndexEven = WallIndexOdd = D2DWallIndices[pcNone];       
                 }
 
-                /**
-                 * Determine whether there is a block at the given position.
-                 */
+                //Determine whether there is a block at the given position.
                 for(int WallYPos = 0; WallYPos < DWallShape[ColorIndex].Height(); WallYPos++){
                     for(int WallXPos = 0; WallXPos < DWallShape[ColorIndex].Width(); WallXPos++){
                         if(DWallShape[ColorIndex].IsBlock(WallXPos, WallYPos)){
@@ -1590,9 +1584,7 @@ void CApplicationData::Draw3DFrame(){
         }
     }
 
-    /**
-     * Work through all burns/explosions/plumes
-     */
+    //Work through all burns/explosions/plumes
     while((BurnPosition != DBurnStates.end())||(ExplosionPosition != DExplosionStates.end())||(PlumePosition != DPlumeStates.end())){
         if(BurnPosition != DBurnStates.end()){
             D3DBurnTileset.DrawTile(DWorkingBufferPixmap, DDrawingContext, BurnPosition->DXIndex * DTileWidth, BurnPosition->DYIndex * DTileHeight, BurnPosition->DSpriteIndex + BurnPosition->DStep);   
@@ -1608,9 +1600,7 @@ void CApplicationData::Draw3DFrame(){
         }
     }
     
-    /**
-     * For loop to move each cannonball forward by one frame
-     */
+    //For loop to move each cannonball forward by one frame
     for(std::list< SCannonballTrajectory >::iterator Cannonball = DCannonballTrajectories.begin(); Cannonball != DCannonballTrajectories.end(); Cannonball++){
         int XPos = Cannonball->DXPosition;
         int YPos = Cannonball->DYPosition;
@@ -1622,9 +1612,7 @@ void CApplicationData::Draw3DFrame(){
         D3DCannonballTileset.DrawTile(DWorkingBufferPixmap, DDrawingContext, XPos, YPos, CalculateCannonballSize(Cannonball->DZPosition));
     }
     
-    /**
-     *  If game mode is battle, draw targeting reticule for each player.
-     */
+    //If game mode is battle, draw targeting reticule for each player.
     if((gmBattle == DGameMode)&&(gmBattle == DNextGameMode)){
         for(int Index = pcBlue; Index < pcBlue + DPlayerCount; Index++){
             DTargetTileset.DrawTile(DWorkingBufferPixmap, DDrawingContext, DCurrentX[Index] - DTargetTileset.TileWidth() / 2, DCurrentY[Index] - DTargetTileset.TileHeight() / 2, D3DTargetIndices[Index]);
