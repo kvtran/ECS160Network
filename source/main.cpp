@@ -3630,59 +3630,79 @@ int CApplicationData::Init(int argc, char *argv[]){
     DIR *MapDirectory;
     struct dirent *DirectoryEntry;
     std::string MapPath = "maps";
-    // This is called in all GTK applications. Arguments are parsed from the 
-    // command line and are returned to the application. All GTK+ specific 
-    // arguments are removed from the argc/argv list.
+
+    /** 
+     * This is called in all GTK applications. 
+     *
+     * Arguments are parsed from the 
+     * command line and are returned to the application. All GTK+ specific 
+     * arguments are removed from the argc/argv list.
+     */
     gtk_init(&argc, &argv);
     
-    
-    // Create a new main window 
+    // Create a new main window.
     DMainWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     
-    // When the window is given the "delete-event" signal (this is given by the 
-    // window manager, usually by the "close" option, or on the titlebar), we 
-    // ask it to call the delete_event () function as defined above. The data 
-    // passed to the callback function is NULL and is ignored in the callback 
-    // function. 
+    /** 
+     * Allows GTK to know whether or not to keep a window open.
+     *
+     * See the MainWindowDeleteEventCallback function for more details.
+     * When the window is given the "delete-event" signal (this is given by the 
+     * window manager, usually by the "close" option, or on the titlebar), we 
+     * ask it to call the delete_event () function as defined above. The data 
+     * passed to the callback function is NULL and is ignored in the callback 
+     * function. 
+     */
     g_signal_connect(DMainWindow, "delete-event", G_CALLBACK(MainWindowDeleteEventCallback), this);
     
-    // Here we connect the "destroy" event to a signal handler. This event 
-    // occurs when we call gtk_widget_destroy() on the window, or if we return 
-    // FALSE in the "delete-event" callback. 
+    /** 
+     * Allows GTK to handle closing the main window.
+     *
+     * See the MainWindowDestroyCallback function for more details.
+     * Here we connect the "destroy" event to a signal handler. This event 
+     * occurs when we call gtk_widget_destroy() on the window, or if we return 
+     * FALSE in the "delete-event" callback. 
+     */
     g_signal_connect(DMainWindow, "destroy", G_CALLBACK(MainWindowDestroyCallback), this);
     
+    // Allows GTK to handle keyboard inputs.
     g_signal_connect(DMainWindow, "key-press-event", G_CALLBACK(MainWindowKeyPressEventCallback), this);
-    
     
     // Sets the border width of the window. 
     gtk_container_set_border_width(GTK_CONTAINER(DMainWindow), 10);
     
-    // Creates a drawing surface
+    // Creates a drawing surface.
     DDrawingArea = gtk_drawing_area_new();
 
     gtk_drawing_area_size(GTK_DRAWING_AREA(DDrawingArea), INITIAL_MAP_WIDTH, INITIAL_MAP_HEIGHT);
     
-    // Add drawing surface to main window
+    // Add drawing surface to main window.
     gtk_container_add(GTK_CONTAINER(DMainWindow), DDrawingArea);
     
+    // Signal connections that allow updates on and interactions with the main window.
     gtk_signal_connect(GTK_OBJECT(DDrawingArea), "expose_event", G_CALLBACK(DrawingAreaExposeCallback), this);
     gtk_signal_connect(GTK_OBJECT(DDrawingArea), "button_press_event", G_CALLBACK(DrawingAreaButtonPressEventCallback), this);
     gtk_signal_connect(GTK_OBJECT(DDrawingArea), "motion_notify_event", G_CALLBACK(DrawingAreaMotionNotifyEventCallback), this);
-    
+
+    // Describes what events the main window can receive.
     gtk_widget_set_events(DDrawingArea, GDK_EXPOSURE_MASK | GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK);
-    
+
+    // Makes cursor invisible over main window.
     DBlankCursor = gdk_cursor_new(GDK_BLANK_CURSOR);
-    // Show all widgets so they are displayed
+
+    // Show all widgets so they are displayed.
     gtk_widget_show(DDrawingArea);
     gtk_widget_show(DMainWindow);
     
     gdk_window_set_cursor(DDrawingArea->window, DBlankCursor); 
     
-    //MainData.DDrawingContext = gdk_gc_new(MainData.DDrawingArea->window);
+    // MainData.DDrawingContext = gdk_gc_new(MainData.DDrawingArea->window);
     DDrawingContext = DDrawingArea->style->fg_gc[gtk_widget_get_state(DDrawingArea)];
     
-    
-
+    /**
+     * The following if statements checks if all “.dat” files have loaded correctly.
+     * Else returns error and ends the program.
+     */
     if(!D2DTerrainTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/2DTerrain.dat")){
         printf("Failed to load tileset.\n");
         return -1;
@@ -3763,11 +3783,18 @@ int CApplicationData::Init(int argc, char *argv[]){
         printf("Failed to load sound clips.\n");
         return -1;
     }
-    
+
+    /**
+     * Sets the number of frames in certain animations.
+     */
     DExplosionSteps = D3DExplosionTileset.TileCount() / etMax;
     DBurnSteps = D3DBurnTileset.TileCount() / btMax;
     DCannonPlumeSteps = D3DCannonPlumeTileset.TileCount() / dMax;
     
+    /**
+     * The following initializes the D2D and D3D tile indices.
+     * This allows GTK to find the right tile to display.
+     */
     D2DCastleIndices[pcNone] = D2DCastleCannonTileset.FindTile("castle-none");
     D2DCastleIndices[pcBlue] = D2DCastleCannonTileset.FindTile("castle-blue");
     D2DCastleIndices[pcRed] = D2DCastleCannonTileset.FindTile("castle-red");
@@ -3824,7 +3851,6 @@ int CApplicationData::Init(int argc, char *argv[]){
     }
     D3DDamagedGroundIndex = D3DTerrainTileset.FindTile("hole-0");
     
-    
     D3DExplosionIndices[etWallExplosion0] = D3DExplosionTileset.FindTile("explosion-0");
     D3DExplosionIndices[etWallExplosion1] = D3DExplosionTileset.FindTile("explosion-alt-0");
     D3DExplosionIndices[etWaterExplosion0] = D3DExplosionTileset.FindTile("water-explosion-0");
@@ -3846,6 +3872,10 @@ int CApplicationData::Init(int argc, char *argv[]){
     D3DCannonPlumeIndices[dWest] = D3DCannonPlumeTileset.FindTile("west-0");
     D3DCannonPlumeIndices[dNorthWest] = D3DCannonPlumeTileset.FindTile("northwest-0");
     
+    /**
+     * The following initializes the sound indices.
+     * This allows GTK to find the right sound to play.
+     */
     DSoundClipIndices[sctTick] = DSoundMixer.FindClip("tick");
     DSoundClipIndices[sctTock] = DSoundMixer.FindClip("tock");
     DSoundClipIndices[sctCannon0] = DSoundMixer.FindClip("cannon0");
@@ -3874,7 +3904,10 @@ int CApplicationData::Init(int argc, char *argv[]){
     DSongIndices[stRebuild] = DSoundMixer.FindSong("rebuild");
     DSongIndices[stPlace] = DSoundMixer.FindSong("place");
     
-    
+    /**
+     * The following initializes brick tile indices.
+     * This allows the GTK to find the right brick tile to display.
+     */
     DBrickIndices[bbtTopCenter] = DBrickTileset.FindTile("brick-tc");
     DBrickIndices[bbtTopRight] = DBrickTileset.FindTile("brick-tr");
     DBrickIndices[bbtRight0] = DBrickTileset.FindTile("brick-r0");
@@ -3887,7 +3920,10 @@ int CApplicationData::Init(int argc, char *argv[]){
     DBrickIndices[bbtTopLeft] = DBrickTileset.FindTile("brick-tl");
     DBrickIndices[bbtSingle] = DBrickTileset.FindTile("brick-single");
     
-    
+    /**
+     * The following initializes mortar tile indices.
+     * This allows the GTK to find the right mortar tile to display.
+     */
     DMortarIndices[bmtTopCenter] = DMortarTileset.FindTile("mortar-tc");
     DMortarIndices[bmtTopRight0] = DMortarTileset.FindTile("mortar-tr0");
     DMortarIndices[bmtTopRight1] = DMortarTileset.FindTile("mortar-tr1");
@@ -3917,18 +3953,26 @@ int CApplicationData::Init(int argc, char *argv[]){
     DMortarIndices[bmtLeftTop1] = DMortarTileset.FindTile("mortar-lt1");
     DMortarIndices[bmtLeftTop2] = DMortarTileset.FindTile("mortar-lt2");
     
-    
+    // Opens game maps directory.
     MapDirectory = opendir(MapPath.c_str());
+
+    // Checks if game maps directory opened correctly.
     if(NULL == MapDirectory){
         printf("Failed to open directory.\n");
         return -1;
     }
+
+    // While loop to load all map files
     while((DirectoryEntry = readdir( MapDirectory ))){
         std::string Filename = MapPath + "/";
         Filename += DirectoryEntry->d_name;
         if(Filename.rfind(".map") == (Filename.length() - 4)){
             CTerrainMap TempMap;
             
+            /**
+             * Checks if the map loaded correctly. 
+             * If not, go to next map file.
+             */
             if(!TempMap.LoadMap(&D2DTerrainTileset, &D3DTerrainTileset, Filename)){
                 printf("Failed to load map \"%s\".\n",Filename.c_str());
                 continue;
@@ -3936,22 +3980,35 @@ int CApplicationData::Init(int argc, char *argv[]){
             DTerrainMaps.push_back(TempMap);
         }
     }
+
+    // Close the game maps directory.
     closedir(MapDirectory);
+
+    // If no maps were loaded, exit the app.
     if(0 == DTerrainMaps.size()){
         printf("No maps loaded.\n");
         return 0;
     }
+
+    // Initializes window size scaling to 1.
     DScaling = 1;
     
+    // Loads the main menu.
     LoadTerrainMap(0);
     ChangeMode(gmMainMenu);
     DrawMenu();
     
+    // gdk draw functions for generating window contents.
     gdk_draw_pixmap(DPreviousWorkingBufferPixmap, DDrawingContext, DWorkingBufferPixmap, 0, 0, 0, 0, -1, -1);
     gdk_draw_pixmap(DDoubleBufferPixmap, DDrawingContext, DWorkingBufferPixmap, 0, 0, 0, 0, -1, -1);
     gdk_draw_pixmap(DDrawingArea->window, DDrawingContext, DDoubleBufferPixmap, 0, 0, 0, 0, -1, -1);
 
-    
+    /**
+     * Sets up the amount of time to wait before recalling timeoutCallBack.
+     *
+     * See https://developer.gnome.org/glib/stable/glib-The-Main-Event-Loop.html#g-timeout-add
+     * for more documentation.
+     */
     gettimeofday(&DNextExpectedTimeout, NULL);
     DNextExpectedTimeout.tv_usec += TIMEOUT_INTERVAL * 1000;
     if(1000000 <= DNextExpectedTimeout.tv_usec){
@@ -3959,14 +4016,19 @@ int CApplicationData::Init(int argc, char *argv[]){
         DNextExpectedTimeout.tv_sec++;
     }
     g_timeout_add(TIMEOUT_INTERVAL, TimeoutCallback, this);
-    // All GTK applications must have a gtk_main(). Control ends here and waits 
-    // for an event to occur (like a key press or mouse event). 
+
+    /**
+     * All GTK applications must have a gtk_main(). Control ends here and waits 
+     * for an event to occur (like a key press or mouse event). 
+     */
     gtk_main ();
     return 0;
 }
 
 
 int main(int argc, char *argv[]){
+
+    // Create app object.
     CApplicationData MainData;
     int ReturnValue;
 
@@ -3981,6 +4043,7 @@ int main(int argc, char *argv[]){
     printf("distribution for educational purposes only and this copyright notice does not\n"); 
     printf("attempt to claim any ownership of this material.\n");
     
+    // Initializes and runs the app.
     ReturnValue = MainData.Init(argc, argv);
 
     return ReturnValue;
