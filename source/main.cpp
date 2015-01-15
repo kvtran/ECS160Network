@@ -1232,6 +1232,9 @@ void CApplicationData::Draw2DFrame(){
             LocationIterator++;
         }
     }
+
+
+    //For each active player, draws cannons which that player has placed.
     for(int Index = pcBlue; Index < pcMax; Index++){
         std::vector< SMapLocation >::iterator Iterator = DCannonLocations[Index].begin();
         
@@ -1240,6 +1243,11 @@ void CApplicationData::Draw2DFrame(){
             Iterator++;
         }
     }
+
+    /**
+     * If the current game mode is Cannon placement, then for each player draw cannons
+     * which that player has just placed.
+     */
     if(gmCannonPlacement == DGameMode){
         for(int Index = pcBlue; Index < pcBlue + DPlayerCount; Index++){
             if((DCannonsToPlace[Index])&&(DGameMode == DNextGameMode)){
@@ -1250,6 +1258,8 @@ void CApplicationData::Draw2DFrame(){
             }
         }
     }
+
+    //If the current game mode is Rebuild, then draw tile currently held by each player.
     else if(gmRebuild == DGameMode){
         for(int ColorIndex = pcBlue; ColorIndex < pcBlue + DPlayerCount; ColorIndex++){
             if((!DCompletedStage[ColorIndex])&&(DGameMode == DNextGameMode)){
@@ -1268,7 +1278,7 @@ void CApplicationData::Draw2DFrame(){
                     struct timeval CurrentTime;
                     
                     gettimeofday(&CurrentTime, NULL);
-                    if(CurrentTime.tv_usec < 500000){
+                    if(CurrentTime.tv_usec < 500000){               //Appears useless, never true.
                         WallIndexEven = D2DWallIndices[pcMax]; 
                         WallIndexOdd = D2DWallIndices[pcMax + 1];
                     }
@@ -1280,6 +1290,8 @@ void CApplicationData::Draw2DFrame(){
                 else{
                     WallIndexEven = WallIndexOdd = D2DWallIndices[pcNone];       
                 }
+
+                //Determine whether there is a block at the given position.
                 for(int WallYPos = 0; WallYPos < DWallShape[ColorIndex].Height(); WallYPos++){
                     for(int WallXPos = 0; WallXPos < DWallShape[ColorIndex].Width(); WallXPos++){
                         if(DWallShape[ColorIndex].IsBlock(WallXPos, WallYPos)){
@@ -1305,6 +1317,11 @@ void CApplicationData::Draw2DFrame(){
             }
         }
     }
+
+    /**
+     * If the current game mode is either cannon placement or rebuild, determine if there is time left,
+     * and, if so, update the counter display.
+     */
     if((gmCannonPlacement == DGameMode)||(gmRebuild == DGameMode)){
         int SecondsLeft = SecondsUntilDeadline(DCurrentStageTimeout);
         
@@ -1316,6 +1333,10 @@ void CApplicationData::Draw2DFrame(){
     }
 } 
 
+/**
+ * @brief CApplicationData::Draw3DFrame
+ * No parameters, draws frames during combat phase.
+ */
 void CApplicationData::Draw3DFrame(){
     std::vector< SMapLocation >::iterator CannonPositions[pcMax];
     std::vector< SMapLocation >::iterator CastlePositions[pcMax];
@@ -1325,19 +1346,29 @@ void CApplicationData::Draw3DFrame(){
     std::list< SSpriteState >::iterator PlumePosition;
     int CurrentAnimationTimestep = (DAnimationTimestep/4) % ANIMATION_TIMESTEPS;
 
+    //Sets cannons to draw
     for(int Index = 0; Index < pcMax; Index++){
         CannonPositions[Index] = DCannonLocations[Index].begin();
     }
+
+    //Sets castles to draw
     for(int Index = 0; Index < pcMax; Index++){
         CastlePositions[Index] = DCastleLocations[Index].begin();
         CastleSurroundedPositions[Index] = DSurroundedCastles[Index].begin();
     }    
+
+    //Sets Explosions/Flames/Smoke to draw
     ExplosionPosition = DExplosionStates.begin();
     BurnPosition = DBurnStates.begin();
     PlumePosition = DPlumeStates.begin();
     
+    //Draws frame
     gdk_draw_pixmap(DWorkingBufferPixmap, DDrawingContext, D3DTerrainPixmaps[CurrentAnimationTimestep], 0, 0, 0, 0, -1, -1);
     
+    /**
+     * For each tile, check whether tile should be a wall or floor, and if they are damaged,
+     * then draw that tile.
+     */
     for(int YIndex = 0, YPos = 0; YIndex < DConstructionTiles.size(); YIndex++, YPos += DTileHeight){
         for(int XIndex = 0, XPos = 0; XIndex < DConstructionTiles[YIndex].size(); XIndex++, XPos += DTileWidth){
             switch(DConstructionTiles[YIndex][XIndex]){
@@ -1365,7 +1396,12 @@ void CApplicationData::Draw3DFrame(){
             }
         }
     }
-
+    /**
+     * For each tile, determine WallType, and WallOffset, and call appropriate draw function, if
+     * the tile is not part of a fortress/castle, then draw the appropriate tile, i.e. grass/water/
+     * smoke, etc.
+     * Uncertain of reason previous loop pair also needed.
+     */
     for(int YIndex = 0, YPos = -DTileHeight; YIndex < DConstructionTiles.size(); YIndex++, YPos += DTileHeight){
         for(int XIndex = 0, XPos = 0; XIndex < DConstructionTiles[YIndex].size(); XIndex++, XPos += DTileWidth){
             int WallType = 0xF;
@@ -1544,6 +1580,8 @@ void CApplicationData::Draw3DFrame(){
                     }
                 }
             }
+
+            //draw next frame of burn animation
             while(BurnPosition != DBurnStates.end()){
                 if((BurnPosition->DXIndex == XIndex)&&(BurnPosition->DYIndex == YIndex)){
                     D3DBurnTileset.DrawTile(DWorkingBufferPixmap, DDrawingContext, XPos, YPos + DTileHeight, BurnPosition->DSpriteIndex + BurnPosition->DStep);   
@@ -1553,6 +1591,8 @@ void CApplicationData::Draw3DFrame(){
                     break;    
                 }
             }
+
+            //draw next frame of explosion animation
             while(ExplosionPosition != DExplosionStates.end()){
                 if((ExplosionPosition->DXIndex == XIndex)&&(ExplosionPosition->DYIndex == YIndex)){
                     D3DExplosionTileset.DrawTile(DWorkingBufferPixmap, DDrawingContext, XPos - DTileWidth/2 + ExplosionPosition->DXOffset, YPos - DTileHeight + ExplosionPosition->DYOffset, ExplosionPosition->DSpriteIndex + ExplosionPosition->DStep);   
@@ -1563,6 +1603,7 @@ void CApplicationData::Draw3DFrame(){
                 }
             }
 
+            //draw next frame of smoke animation
             while(PlumePosition != DPlumeStates.end()){
                 if((PlumePosition->DXIndex == XIndex)&&(PlumePosition->DYIndex == YIndex)){
                     D3DCannonPlumeTileset.DrawTile(DWorkingBufferPixmap, DDrawingContext, XPos + DTileWidth - D3DCannonPlumeTileset.TileWidth()/2, YPos, PlumePosition->DSpriteIndex + PlumePosition->DStep);   
@@ -1575,6 +1616,8 @@ void CApplicationData::Draw3DFrame(){
             }
         }
     }
+
+    //Work through all burns/explosions/plumes
     while((BurnPosition != DBurnStates.end())||(ExplosionPosition != DExplosionStates.end())||(PlumePosition != DPlumeStates.end())){
         if(BurnPosition != DBurnStates.end()){
             D3DBurnTileset.DrawTile(DWorkingBufferPixmap, DDrawingContext, BurnPosition->DXIndex * DTileWidth, BurnPosition->DYIndex * DTileHeight, BurnPosition->DSpriteIndex + BurnPosition->DStep);   
@@ -1590,6 +1633,7 @@ void CApplicationData::Draw3DFrame(){
         }
     }
     
+    //For loop to move each cannonball forward by one frame
     for(std::list< SCannonballTrajectory >::iterator Cannonball = DCannonballTrajectories.begin(); Cannonball != DCannonballTrajectories.end(); Cannonball++){
         int XPos = Cannonball->DXPosition;
         int YPos = Cannonball->DYPosition;
@@ -1601,6 +1645,7 @@ void CApplicationData::Draw3DFrame(){
         D3DCannonballTileset.DrawTile(DWorkingBufferPixmap, DDrawingContext, XPos, YPos, CalculateCannonballSize(Cannonball->DZPosition));
     }
     
+    //If game mode is battle, draw targeting reticule for each player.
     if((gmBattle == DGameMode)&&(gmBattle == DNextGameMode)){
         for(int Index = pcBlue; Index < pcBlue + DPlayerCount; Index++){
             DTargetTileset.DrawTile(DWorkingBufferPixmap, DDrawingContext, DCurrentX[Index] - DTargetTileset.TileWidth() / 2, DCurrentY[Index] - DTargetTileset.TileHeight() / 2, D3DTargetIndices[Index]);
