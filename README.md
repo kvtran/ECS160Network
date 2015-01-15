@@ -1,5 +1,9 @@
 # ECS160Linux
 
+## Documentation
+
+View documentation at https://ucdclassnitta.github.io/ECS160Linux/
+
 ## Requirements
 
 Development packages for:
