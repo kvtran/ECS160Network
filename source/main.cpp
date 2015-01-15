@@ -810,11 +810,26 @@ gboolean CApplicationData::MainWindowKeyPressEvent(GtkWidget *widget, GdkEventKe
     return TRUE;
 }
 
+/**
+ * Redraws window after refocusing on it.
+ * If another window is placed on top of the game window, this redraws that game window.
+ *
+ * @param widget GTK Widget object
+ * @param event Event object to indicate location of redrawing
+ * @return Boolean changed to false to indicate it has finished drawing
+ */
 gboolean CApplicationData::DrawingAreaExpose(GtkWidget *widget, GdkEventExpose *event){
     gdk_draw_pixmap(widget->window, widget->style->fg_gc[gtk_widget_get_state (widget)], DDoubleBufferPixmap, event->area.x, event->area.y, event->area.x, event->area.y, event->area.width, event->area.height);
     return FALSE;
 }
 
+/**
+ * Checks if a mouse button is clicked, and sets DRightClick for player and pcNone to true.
+ *
+ * @param widget GTK Widget object
+ * @param event Button object to indicate when clicked
+ * @return Boolean changed to true
+ */
 gboolean CApplicationData::DrawingAreaButtonPressEvent(GtkWidget *widget, GdkEventButton *event){
     if(1 == event->button){
         if(GDK_CONTROL_MASK & event->state){
@@ -830,6 +845,13 @@ gboolean CApplicationData::DrawingAreaButtonPressEvent(GtkWidget *widget, GdkEve
     return TRUE;
 }
 
+/**
+ * Checks if the window is moved, and sets the events to scale properly for drawing.
+ *
+ * @param widget GTK Widget object
+ * @param event Event of motion object
+ * @return Boolean changed to true
+ */
 gboolean CApplicationData::DrawingAreaMotionNotifyEvent(GtkWidget *widget, GdkEventMotion *event){
     int EventX, EventY;
     EventX = event->x;
@@ -852,6 +874,9 @@ gboolean CApplicationData::DrawingAreaMotionNotifyEvent(GtkWidget *widget, GdkEv
     return TRUE;
 }
 
+/**
+ * Draws the main menu.
+ */
 void CApplicationData::DrawMenu(){
     gint TotalTextHeight, TextX, TextY, TextWidth, TextHeight;
     gint RequiredWidth, RequiredHeight;
@@ -901,6 +926,9 @@ void CApplicationData::DrawMenu(){
     
 }
 
+/**
+ * Draws the sound options menu.
+ */
 void CApplicationData::DrawSoundOptions(){
     gint TextX, TextY, TextWidth, TextHeight, MaxWidth, MaxHeight;
     gint RequiredWidth, RequiredHeight;
@@ -1040,7 +1068,9 @@ void CApplicationData::DrawSoundOptions(){
     }
 }
 
-
+/**
+ * Draws the map selection menu.
+ */
 void CApplicationData::DrawSelectMap(){
     gint TextX, TextY, TextWidth, TextHeight;
     gint RequiredWidth, RequiredHeight;
@@ -1117,6 +1147,9 @@ void CApplicationData::DrawSelectMap(){
     }
 }
 
+/**
+ * Draws a 2D frame on the screen.
+ */
 void CApplicationData::Draw2DFrame(){
     gdk_draw_pixmap(DWorkingBufferPixmap, DDrawingContext, D2DTerrainPixmap, 0, 0, 0, 0, -1, -1);
 
@@ -1622,10 +1655,11 @@ void CApplicationData::Draw3DFrame(){
     DAnimationTimestep += DWindSpeed;
 }
 
+
 void CApplicationData::DrawBanner(const std::string &message){
-    gint BannerWidth = 0;
-    gint BannerHeight = 0;
-    gint RequiredWidth, RequiredHeight;
+    gint BannerWidth = 0; 
+    gint BannerHeight = 0; 
+    gint RequiredWidth, RequiredHeight; 
     gint TextRequiredWidth, TextRequiredHeight;
     gint TextX, TextY;
     //gint BrickType = 0;
@@ -1638,6 +1672,8 @@ void CApplicationData::DrawBanner(const std::string &message){
     if(NULL != DBannerPixmap){
         gdk_pixmap_get_size(DBannerPixmap, &BannerWidth, &BannerHeight); 
     }
+    
+    // Creates Bannerpixmap if banner's dimensions don't mix
     if((BannerWidth != RequiredWidth)||(BannerHeight != RequiredHeight)){
         if(NULL != DBannerPixmap){
              g_object_unref(DBannerPixmap);
@@ -1645,22 +1681,24 @@ void CApplicationData::DrawBanner(const std::string &message){
         DBannerPixmap = gdk_pixmap_new(DDrawingArea->window, RequiredWidth, RequiredHeight, -1);
     }
 
-    DrawTextFrame(DBannerPixmap, RequiredWidth, RequiredHeight);
-    TextX = (DCanvasWidth / 2) - (TextRequiredWidth / 2);
-    TextY = (RequiredHeight / 2) - (TextRequiredHeight / 2);
-    DBlackFont.DrawText(DBannerPixmap, DDrawingContext, TextX + 1, TextY + 1, message);
-    DWhiteFont.DrawText(DBannerPixmap, DDrawingContext, TextX, TextY, message);
+    DrawTextFrame(DBannerPixmap, RequiredWidth, RequiredHeight); // Draws text frame 
+    TextX = (DCanvasWidth / 2) - (TextRequiredWidth / 2); // Determines textX 
+    TextY = (RequiredHeight / 2) - (TextRequiredHeight / 2); // Determines textY 
+    DBlackFont.DrawText(DBannerPixmap, DDrawingContext, TextX + 1, TextY + 1, message); // Draws text in black font 
+    DWhiteFont.DrawText(DBannerPixmap, DDrawingContext, TextX, TextY, message); // Draws text in white font 
 }
 
+// Draws message 
 void CApplicationData::DrawMessage(const std::string &message){
-    gint MessageWidth = 0;
-    gint MessageHeight = 0;
-    gint RequiredWidth, RequiredHeight;
-    gint TextRequiredWidth = 0, TextRequiredHeight = 0;
-    gint TextX, TextY;
-    std::list< std::string > Lines;
-    std::size_t Anchor = 0;
+    gint MessageWidth = 0; // Message's width 
+    gint MessageHeight = 0; // Message's height 
+    gint RequiredWidth, RequiredHeight; // Required height and weight 
+    gint TextRequiredWidth = 0, TextRequiredHeight = 0; // Required width for text and height for text 
+    gint TextX, TextY; // Text x and text y 
+    std::list< std::string > Lines; // String of lines 
+    std::size_t Anchor = 0; // Sets Anchor to 0 
     
+    // Uses while loop to draw message while pushing back each letter
     while(Anchor < message.length()){
         std::size_t NewPos = message.find("\n",Anchor);
         if(std::string::npos == NewPos){
@@ -1672,6 +1710,8 @@ void CApplicationData::DrawMessage(const std::string &message){
             Anchor = NewPos + 1;
         }
     }
+    
+    // For loop ensures the required width/height of text of current line  
     for(std::list< std::string >::iterator CurLine = Lines.begin(); CurLine != Lines.end(); CurLine++){
         gint LineHeight, LineWidth;
         DBlackFont.MeasureText(*CurLine, LineWidth, LineHeight); 
@@ -1681,12 +1721,14 @@ void CApplicationData::DrawMessage(const std::string &message){
         TextRequiredHeight += LineHeight + 2;
     }
     
-    RequiredWidth = TextRequiredWidth + 1;
-    RequiredWidth += DBrickTileset.TileWidth();
-    RequiredWidth = ((RequiredWidth + DBrickTileset.TileWidth() - 1) / DBrickTileset.TileWidth()) * DBrickTileset.TileWidth();
-    RequiredHeight = TextRequiredHeight;
-    RequiredHeight += DBrickTileset.TileHeight() * 2;
-    RequiredHeight = ((RequiredHeight + DBrickTileset.TileHeight() - 1) / DBrickTileset.TileHeight()) * DBrickTileset.TileHeight();
+    RequiredWidth = TextRequiredWidth + 1; // Required width 
+    RequiredWidth += DBrickTileset.TileWidth(); // Add brick tile width to req width 
+    RequiredWidth = ((RequiredWidth + DBrickTileset.TileWidth() - 1) / DBrickTileset.TileWidth()) * DBrickTileset.TileWidth(); // Sets the required width 
+    RequiredHeight = TextRequiredHeight; // Required height 
+    RequiredHeight += DBrickTileset.TileHeight() * 2; // Add brick tile height to req height 
+    RequiredHeight = ((RequiredHeight + DBrickTileset.TileHeight() - 1) / DBrickTileset.TileHeight()) * DBrickTileset.TileHeight(); // Sets required height
+    
+    // Instantiates a messagepixmap
     if(NULL != DMessagePixmap){
         gdk_pixmap_get_size(DMessagePixmap, &MessageWidth, &MessageHeight); 
     }
@@ -1697,8 +1739,9 @@ void CApplicationData::DrawMessage(const std::string &message){
         DMessagePixmap = gdk_pixmap_new(DDrawingArea->window, RequiredWidth, RequiredHeight, -1);
     }
     
-    DrawTextFrame(DMessagePixmap, RequiredWidth, RequiredHeight);
-    TextY = DBrickTileset.TileHeight() + 1;
+    DrawTextFrame(DMessagePixmap, RequiredWidth, RequiredHeight); // Draws text frame 
+    TextY = DBrickTileset.TileHeight() + 1; // Sets textY 
+    // Draws message in black font and white font
     for(std::list< std::string >::iterator CurLine = Lines.begin(); CurLine != Lines.end(); CurLine++){
         gint LineHeight, LineWidth;
         DBlackFont.MeasureText(*CurLine, LineWidth, LineHeight); 
@@ -1710,7 +1753,14 @@ void CApplicationData::DrawMessage(const std::string &message){
     
 }
 
+
+// Draws background of menu
 void CApplicationData::DrawMenuBackground(GdkPixmap *buffer, gint width, gint height){
+    /**
+     * Draws tile according to height width
+     * HeightOffset = height of indiv tile
+     * WidthOffset = width of indiv tile
+     */
     for(gint HeightOffset = 0; HeightOffset < height; HeightOffset += 8){
         if(HeightOffset & 0x8){
             for(gint WidthOffset = -(DBrickTileset.TileWidth()/2); WidthOffset < width; WidthOffset += DBrickTileset.TileWidth()){
@@ -1726,7 +1776,10 @@ void CApplicationData::DrawMenuBackground(GdkPixmap *buffer, gint width, gint he
     DrawBrickFrame(buffer, 0, 0, width, height);    
 }
 
+// Draws text frame
 void CApplicationData::DrawTextFrame(GdkPixmap *buffer, gint width, gint height){
+    
+    // Fills up tiles as long as collective height/width of tiles is less than height/width of frame
     for(gint HeightOffset = 0; HeightOffset < height; HeightOffset += D2DWallFloorTileset.TileHeight()){
         for(gint WidthOffset = 0; WidthOffset < width; WidthOffset += D2DWallFloorTileset.TileWidth()){
             D2DWallFloorTileset.DrawTile(buffer, DDrawingContext, WidthOffset, HeightOffset, D2DFloorIndices[DPlayerColor]);
@@ -1735,32 +1788,40 @@ void CApplicationData::DrawTextFrame(GdkPixmap *buffer, gint width, gint height)
     DrawBrickFrame(buffer, 0, 0, width, height);
 }
 
+// Draws brick frame
 void CApplicationData::DrawBrickFrame(GdkPixmap *buffer, gint xoff, gint yoff, gint width, gint height){
     gint BrickType = 0;
-    
+    // Draws brick frame as long as cumulative width offset is less than width
     for(gint WidthOffset = 0; WidthOffset < width; WidthOffset += DBrickTileset.TileWidth()){
         DBrickTileset.DrawTile(buffer, DDrawingContext, xoff + WidthOffset, yoff, DBrickIndices[bbtTopCenter]);
         DBrickTileset.DrawTile(buffer, DDrawingContext, xoff + WidthOffset, yoff + height - DBrickTileset.TileHeight(), DBrickIndices[bbtBottomCenter]);
     }
-    
+    // Draws brick frame as long as cumulative height is less than frame height
     for(gint HeightOffset = 0; HeightOffset < height; HeightOffset += DBrickTileset.TileHeight()){
         DBrickTileset.DrawTile(buffer, DDrawingContext, xoff, yoff + HeightOffset, BrickType ? DBrickIndices[bbtLeft1] : DBrickIndices[bbtLeft0]);
         DBrickTileset.DrawTile(buffer, DDrawingContext, xoff + width - DBrickTileset.TileWidth(), yoff + HeightOffset, BrickType ? DBrickIndices[bbtRight1] : DBrickIndices[bbtRight0]);
         BrickType++;
         BrickType &= 0x1;
     }
+    
+    // Draws the 4 corner tiles 
     DBrickTileset.DrawTile(buffer, DDrawingContext, xoff, 0, DBrickIndices[bbtTopLeft]);
     DBrickTileset.DrawTile(buffer, DDrawingContext, xoff + width - DBrickTileset.TileWidth(), yoff, DBrickIndices[bbtTopRight]);
     DBrickTileset.DrawTile(buffer, DDrawingContext, xoff + width - DBrickTileset.TileWidth(), yoff + height - DBrickTileset.TileHeight(), DBrickIndices[bbtBottomRight]);
     DBrickTileset.DrawTile(buffer, DDrawingContext, xoff, yoff + height - DBrickTileset.TileHeight(), DBrickIndices[bbtBottomLeft]);
+    // Draws the corner mortar tiles
     DMortarTileset.DrawTile(buffer, DDrawingContext, xoff, yoff - 5, DMortarIndices[bmtLeftTop2]);
     DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + width - DMortarTileset.TileWidth(), yoff - 5, DMortarIndices[bmtRightTop2]);
     DMortarTileset.DrawTile(buffer, DDrawingContext, xoff,  yoff + height -DMortarTileset.TileHeight() + 5, DMortarIndices[bmtLeftBottom2]);
     DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + width - DMortarTileset.TileWidth(), yoff + height -DMortarTileset.TileHeight() + 5, DMortarIndices[bmtRightBottom2]);
+    /**
+     * Draws mortar tiles according to frame's width
+     * Sets index according to index of mortars where center = 0
+     */
     for(gint WidthOffset = 0; WidthOffset < width; WidthOffset += DMortarTileset.TileWidth()){
-        int TopIndex, BottomIndex;
-        int CenterPoint = WidthOffset + DMortarTileset.TileWidth() / 2;
-        int BrickDistance = (width / 2 - CenterPoint) / DMortarTileset.TileWidth();
+        int TopIndex, BottomIndex; // Top index and bottom index of width 
+        int CenterPoint = WidthOffset + DMortarTileset.TileWidth() / 2; // Center point = middle of width 
+        int BrickDistance = (width / 2 - CenterPoint) / DMortarTileset.TileWidth(); // Distance of bricks  
         
         if(-3 >= BrickDistance){
             TopIndex = DMortarIndices[bmtTopRight2];
@@ -1791,9 +1852,11 @@ void CApplicationData::DrawBrickFrame(GdkPixmap *buffer, gint xoff, gint yoff, g
             BottomIndex = DMortarIndices[bmtBottomLeft2];
         }
         
-        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + WidthOffset, yoff, TopIndex);
-        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + WidthOffset, yoff + height - DMortarTileset.TileHeight(), BottomIndex);
+        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + WidthOffset, yoff, TopIndex); // Draws a row of tiles at the top index 
+        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + WidthOffset, yoff + height - DMortarTileset.TileHeight(), BottomIndex); // Draws tiles at bottom 
     }
+
+    // Determines the left index and right index of the frame
     for(gint HeightOffset = 3; HeightOffset < height-DMortarTileset.TileHeight(); HeightOffset += 8){
         int LeftIndex, RightIndex;
         int CenterPoint = HeightOffset + DMortarTileset.TileHeight() / 2;
@@ -1827,31 +1890,35 @@ void CApplicationData::DrawBrickFrame(GdkPixmap *buffer, gint xoff, gint yoff, g
             LeftIndex = DMortarIndices[bmtLeftBottom2];
             RightIndex = DMortarIndices[bmtRightBottom2];
         }
-        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff, yoff + HeightOffset, LeftIndex);
-        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + width - DMortarTileset.TileWidth(), yoff + HeightOffset, RightIndex);
+        
+        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff, yoff + HeightOffset, LeftIndex); // Draws the mortar tiles on left column 
+        DMortarTileset.DrawTile(buffer, DDrawingContext, xoff + width - DMortarTileset.TileWidth(), yoff + HeightOffset, RightIndex); // Draws tile on right col 
 
     }
 }
 
+// Lets user end game
 void CApplicationData::GameOverMode(){
 
     if(DLeftClick[DPlayerColor]){
 
-        ChangeMode(gmMainMenu);
+        ChangeMode(gmMainMenu);   // Change mode to main menu if left clicks 
     }
 }
-
+// Turns on transition mode 
 void CApplicationData::TransitionMode(){
-    gint BannerWidth = 0, BannerHeight = 0;
+    gint BannerWidth = 0, BannerHeight = 0; // Banner width / height = 0 
     bool LastBannerOffscreen = DBannerLocation < 0;
+    // If bannerpixmap exists, get its width/height 
     if(NULL != DBannerPixmap){
         gdk_pixmap_get_size(DBannerPixmap, &BannerWidth, &BannerHeight); 
     }
     DBannerLocation += DCanvasHeight / TIMEOUT_INTERVAL;
+    // If banner goes away, play sound clip
     if(LastBannerOffscreen && (0 <= DBannerLocation)){
         DSoundMixer.PlayClip(DSoundClipIndices[sctTransition], DSoundEffectVolume, 0.0);   
     }
-    
+    // If banner is higher than canvas, do transitions accordingly
     if(DBannerLocation >= DCanvasHeight){
         for(int ColorIndex = pcBlue; ColorIndex < pcMax; ColorIndex++){
             DCompletedStage[ColorIndex] = false;
@@ -1859,6 +1926,7 @@ void CApplicationData::TransitionMode(){
             DAITargetY[ColorIndex] = -1;
             DAITargetCastle[ColorIndex] = -1;
         }
+
         if(gmTransitionCannonPlacement == DGameMode){
             DNextGameMode = gmCannonPlacement;
             gettimeofday(&DCurrentStageTimeout,NULL);
@@ -1894,6 +1962,7 @@ void CApplicationData::TransitionMode(){
     }
 }
 
+// Lets user go back to main menu
 void CApplicationData::MainMenuMode(){
     DSelectedMenuItem = DCurrentY[pcNone] / (DCanvasHeight /  DMenuItems.size());
     
@@ -1919,9 +1988,9 @@ void CApplicationData::MainMenuMode(){
     }
     DLastSelectedMenuItem = DSelectedMenuItem;
 }
-
+// Lets user select map
 void CApplicationData::SelectMapMode(){
-    DSelectedMenuItem = DCurrentY[pcNone] / (DCanvasHeight /  (DTerrainMaps.size() + 1));
+    DSelectedMenuItem = DCurrentY[pcNone] / (DCanvasHeight /  (DTerrainMaps.size() + 1)); 
     
     if(DLeftClick[pcNone]){
         DSoundMixer.PlayClip(DSoundClipIndices[sctPlace], DSoundEffectVolume, 0.0);
@@ -1939,28 +2008,33 @@ void CApplicationData::SelectMapMode(){
     DLastSelectedMenuItem = DSelectedMenuItem;
 }
 
+
+// Lets user go to options menu
 void CApplicationData::OptionsMenuMode(){
     DSelectedMenuItem = DCurrentY[pcNone] / (DCanvasHeight /  DMenuItems.size());
     
     if(DLeftClick[pcNone]){
         if(0 == DSelectedMenuItem){
-            ChangeMode(gmSoundOptions);
+            ChangeMode(gmSoundOptions);  // Changes mode to sound options 
         }
         else if(1 == DSelectedMenuItem){
 
         }
         else{
-            ChangeMode(gmMainMenu);
+            ChangeMode(gmMainMenu);   // Changes to the main menu 
         }
     }
     else if((0 <= DLastSelectedMenuItem)&&(DLastSelectedMenuItem != DSelectedMenuItem)){
         DSoundMixer.PlayClip(DSoundClipIndices[sctTick], DSoundEffectVolume, 0.0);
     }
-    DLastSelectedMenuItem = DSelectedMenuItem;
+    DLastSelectedMenuItem = DSelectedMenuItem; 
 }
 
+/**
+ *  Lets user choose sound options
+ */
 void CApplicationData::SoundOptionsMode(){
-    DSelectedMenuItem = DCurrentY[pcNone] / (DCanvasHeight /  3);
+    DSelectedMenuItem = DCurrentY[pcNone] / (DCanvasHeight /  3); 
     DSelectedMenuItem *= 2;
     if(DCurrentX[pcNone] > (DCanvasWidth/2)){
         DSelectedMenuItem++;
@@ -2630,7 +2704,7 @@ void CApplicationData::BattleMode(){
                 Advance = false;
                 Cannonball = DCannonballTrajectories.erase(Cannonball);
             }
-        
+        }
         // move the cannonball iterator forward to next frame
         if(Advance){
             Cannonball++;    
@@ -2885,6 +2959,7 @@ void CApplicationData::SelectCastleAI(){
     }
 }
 
+// This function chooses which tile the AI will place the cannon at
 void CApplicationData::CannonPlacementAI(){
     for(int ColorIndex = pcBlue; ColorIndex < pcBlue + DPlayerCount; ColorIndex++){
         if(DPlayerIsAI[ColorIndex]){
@@ -2937,6 +3012,10 @@ void CApplicationData::CannonPlacementAI(){
     }
 }
 
+/**
+ * This is the AI that determines how the computer will rebuild walls after they have
+ * been destroyed by the player's cannons
+ */
 void CApplicationData::RebuildAI(){
     for(int ColorIndex = pcBlue; ColorIndex < pcBlue + DPlayerCount; ColorIndex++){
         if(DPlayerIsAI[ColorIndex]){
@@ -3083,6 +3162,7 @@ void CApplicationData::RebuildAI(){
     }
 }
 
+// This is AI for the computer to select a location to fire it's cannon at
 void CApplicationData::BattleAI(){
     for(int ColorIndex = pcBlue; ColorIndex < pcBlue + DPlayerCount; ColorIndex++){
         if(DPlayerIsAI[ColorIndex]){
@@ -3100,6 +3180,12 @@ void CApplicationData::BattleAI(){
     }
 }
 
+/**
+ * This function checks which castles have been surrounded
+ * If the castle is not surrounded, it is marked as unclaimed
+ * If the castle is surrounded, it will color code the castle and surroundings
+ * based on the user/computer's color
+ */
 void CApplicationData::CheckSurroundedCastles(){
     // Check surrounding
     for(int YPos = 0; YPos < DMapHeight; YPos++){
@@ -3160,6 +3246,7 @@ void CApplicationData::CheckSurroundedCastles(){
     }
 }
 
+// This code checks to see if a cannon is placed on top of a castle's location
 bool CApplicationData::CannonCastleInterfere(int xindex, int yindex, int width, int height){
     std::vector< SMapLocation >::iterator Iterator;
     
@@ -3219,6 +3306,7 @@ bool CApplicationData::CannonCastleInterfere(int xindex, int yindex, int width, 
     return false;
 }
 
+// This code checks whether or not the cannon is placed in a valid tile
 bool CApplicationData::ValidCannonPlacement(int colorindex, int xindex, int yindex){
     EConstructionTileType ConTileType;
     
@@ -3247,6 +3335,7 @@ bool CApplicationData::ValidCannonPlacement(int colorindex, int xindex, int yind
     return !CannonCastleInterfere(xindex, yindex, 2, 2);   
 }
 
+// This checks if the wall is placed in a valid tile
 bool CApplicationData::ValidWallPlacement(int colorindex, int xindex, int yindex){
     int XPos, YPos;
     for(int WallYPos = 0; WallYPos < DWallShape[colorindex].Height(); WallYPos++){
@@ -3281,6 +3370,11 @@ bool CApplicationData::ValidWallPlacement(int colorindex, int xindex, int yindex
     return true;
 }
 
+/**
+ * Expands onto unclaimed land
+ *
+ * @param x,y Coordinates of the position where expansion outward is desired
+ */
 void CApplicationData::ExpandUnclaimed(int xpos, int ypos){
     bool NValid, EValid, SValid, WValid;
     
@@ -3338,6 +3432,9 @@ void CApplicationData::ExpandUnclaimed(int xpos, int ypos){
 
 }
 
+/**
+ * Cleans up the wall edges that have been destroyed
+ */
 bool CApplicationData::CleanUpWallEdges(){
     bool WallsRemoved = false;
     
@@ -3392,6 +3489,12 @@ bool CApplicationData::CleanUpWallEdges(){
     return WallsRemoved;
 }
 
+/**
+ * Checks if coordinates given are nonnegative or within the bounds of the map.
+ *
+ * @param x,y References to x and y coordinates
+ * @return If the bounds are valid
+ */
 bool CApplicationData::BoundsCheck(int &xindex, int &yindex){
     bool ValidBounds = true;
     if(0 > xindex){
@@ -3413,6 +3516,9 @@ bool CApplicationData::BoundsCheck(int &xindex, int &yindex){
     return ValidBounds;
 }
 
+/**
+ * Plays tick-tock sound if within threshold of stage timeout.
+ */
 void CApplicationData::PlayTickTockSound(){
     int MSUntilDeadline = MiliSecondsUntilDeadline(DCurrentStageTimeout);
     int LastTickTockMS = -MiliSecondsUntilDeadline(DLastTickTockTime);
@@ -3443,6 +3549,12 @@ void CApplicationData::PlayTickTockSound(){
     }    
 }
 
+/**
+ * Determines if a player has been conquered (lost the game).
+ * Determines by examining how many surrounded castles still exist.
+ * If there are no more castles for the player, the player is conquered.
+ * @return Number of living players
+ */
 int CApplicationData::DetermineConquered(){
     int LivingPlayers = 0;
     
@@ -3469,6 +3581,9 @@ int CApplicationData::DetermineConquered(){
     return LivingPlayers;
 }
 
+/**
+ * Resets the map
+ */
 void CApplicationData::ResetMap(){
     for(int Index = 0; Index < DConstructionTiles.size(); Index++){
         std::vector< EConstructionTileType >::iterator Iterator;
@@ -3508,8 +3623,13 @@ void CApplicationData::ResetMap(){
     DCurrentStageTimeout.tv_sec += SELECT_TIME;
 }
 
+/**
+ * Loads the desired map based on the index given.
+ *
+ * @param index 
+ * @returns Exits if the index is negative or the index > terrain maps array size
+ */
 void CApplicationData::LoadTerrainMap(int index){
-
     if((0 > index)||(DTerrainMaps.size() <= index)){
         return;   
     }
@@ -3554,8 +3674,10 @@ void CApplicationData::LoadTerrainMap(int index){
     }
 }
 
+/**
+ * Resizes the canvas
+ */
 void CApplicationData::ResizeCanvases(){
-    // Resize the canvas
     gtk_drawing_area_size(GTK_DRAWING_AREA(DDrawingArea), DCanvasWidth * DScaling, DCanvasHeight * DScaling);
     
     if(NULL != DDoubleBufferPixmap){
@@ -3641,59 +3763,79 @@ int CApplicationData::Init(int argc, char *argv[]){
     DIR *MapDirectory;
     struct dirent *DirectoryEntry;
     std::string MapPath = "maps";
-    // This is called in all GTK applications. Arguments are parsed from the 
-    // command line and are returned to the application. All GTK+ specific 
-    // arguments are removed from the argc/argv list.
+
+    /** 
+     * This is called in all GTK applications. 
+     *
+     * Arguments are parsed from the 
+     * command line and are returned to the application. All GTK+ specific 
+     * arguments are removed from the argc/argv list.
+     */
     gtk_init(&argc, &argv);
     
-    
-    // Create a new main window 
+    // Create a new main window.
     DMainWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     
-    // When the window is given the "delete-event" signal (this is given by the 
-    // window manager, usually by the "close" option, or on the titlebar), we 
-    // ask it to call the delete_event () function as defined above. The data 
-    // passed to the callback function is NULL and is ignored in the callback 
-    // function. 
+    /** 
+     * Allows GTK to know whether or not to keep a window open.
+     *
+     * See the MainWindowDeleteEventCallback function for more details.
+     * When the window is given the "delete-event" signal (this is given by the 
+     * window manager, usually by the "close" option, or on the titlebar), we 
+     * ask it to call the delete_event () function as defined above. The data 
+     * passed to the callback function is NULL and is ignored in the callback 
+     * function. 
+     */
     g_signal_connect(DMainWindow, "delete-event", G_CALLBACK(MainWindowDeleteEventCallback), this);
     
-    // Here we connect the "destroy" event to a signal handler. This event 
-    // occurs when we call gtk_widget_destroy() on the window, or if we return 
-    // FALSE in the "delete-event" callback. 
+    /** 
+     * Allows GTK to handle closing the main window.
+     *
+     * See the MainWindowDestroyCallback function for more details.
+     * Here we connect the "destroy" event to a signal handler. This event 
+     * occurs when we call gtk_widget_destroy() on the window, or if we return 
+     * FALSE in the "delete-event" callback. 
+     */
     g_signal_connect(DMainWindow, "destroy", G_CALLBACK(MainWindowDestroyCallback), this);
     
+    // Allows GTK to handle keyboard inputs.
     g_signal_connect(DMainWindow, "key-press-event", G_CALLBACK(MainWindowKeyPressEventCallback), this);
-    
     
     // Sets the border width of the window. 
     gtk_container_set_border_width(GTK_CONTAINER(DMainWindow), 10);
     
-    // Creates a drawing surface
+    // Creates a drawing surface.
     DDrawingArea = gtk_drawing_area_new();
 
     gtk_drawing_area_size(GTK_DRAWING_AREA(DDrawingArea), INITIAL_MAP_WIDTH, INITIAL_MAP_HEIGHT);
     
-    // Add drawing surface to main window
+    // Add drawing surface to main window.
     gtk_container_add(GTK_CONTAINER(DMainWindow), DDrawingArea);
     
+    // Signal connections that allow updates on and interactions with the main window.
     gtk_signal_connect(GTK_OBJECT(DDrawingArea), "expose_event", G_CALLBACK(DrawingAreaExposeCallback), this);
     gtk_signal_connect(GTK_OBJECT(DDrawingArea), "button_press_event", G_CALLBACK(DrawingAreaButtonPressEventCallback), this);
     gtk_signal_connect(GTK_OBJECT(DDrawingArea), "motion_notify_event", G_CALLBACK(DrawingAreaMotionNotifyEventCallback), this);
-    
+
+    // Describes what events the main window can receive.
     gtk_widget_set_events(DDrawingArea, GDK_EXPOSURE_MASK | GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK);
-    
+
+    // Makes cursor invisible over main window.
     DBlankCursor = gdk_cursor_new(GDK_BLANK_CURSOR);
-    // Show all widgets so they are displayed
+
+    // Show all widgets so they are displayed.
     gtk_widget_show(DDrawingArea);
     gtk_widget_show(DMainWindow);
     
     gdk_window_set_cursor(DDrawingArea->window, DBlankCursor); 
     
-    //MainData.DDrawingContext = gdk_gc_new(MainData.DDrawingArea->window);
+    // MainData.DDrawingContext = gdk_gc_new(MainData.DDrawingArea->window);
     DDrawingContext = DDrawingArea->style->fg_gc[gtk_widget_get_state(DDrawingArea)];
     
-    
-
+    /**
+     * The following if statements checks if all “.dat” files have loaded correctly.
+     * Else returns error and ends the program.
+     */
     if(!D2DTerrainTileset.LoadTileset(DDrawingArea->window, DDrawingContext, "data/2DTerrain.dat")){
         printf("Failed to load tileset.\n");
         return -1;
@@ -3774,11 +3916,18 @@ int CApplicationData::Init(int argc, char *argv[]){
         printf("Failed to load sound clips.\n");
         return -1;
     }
-    
+
+    /**
+     * Sets the number of frames in certain animations.
+     */
     DExplosionSteps = D3DExplosionTileset.TileCount() / etMax;
     DBurnSteps = D3DBurnTileset.TileCount() / btMax;
     DCannonPlumeSteps = D3DCannonPlumeTileset.TileCount() / dMax;
     
+    /**
+     * The following initializes the D2D and D3D tile indices.
+     * This allows GTK to find the right tile to display.
+     */
     D2DCastleIndices[pcNone] = D2DCastleCannonTileset.FindTile("castle-none");
     D2DCastleIndices[pcBlue] = D2DCastleCannonTileset.FindTile("castle-blue");
     D2DCastleIndices[pcRed] = D2DCastleCannonTileset.FindTile("castle-red");
@@ -3835,7 +3984,6 @@ int CApplicationData::Init(int argc, char *argv[]){
     }
     D3DDamagedGroundIndex = D3DTerrainTileset.FindTile("hole-0");
     
-    
     D3DExplosionIndices[etWallExplosion0] = D3DExplosionTileset.FindTile("explosion-0");
     D3DExplosionIndices[etWallExplosion1] = D3DExplosionTileset.FindTile("explosion-alt-0");
     D3DExplosionIndices[etWaterExplosion0] = D3DExplosionTileset.FindTile("water-explosion-0");
@@ -3857,6 +4005,10 @@ int CApplicationData::Init(int argc, char *argv[]){
     D3DCannonPlumeIndices[dWest] = D3DCannonPlumeTileset.FindTile("west-0");
     D3DCannonPlumeIndices[dNorthWest] = D3DCannonPlumeTileset.FindTile("northwest-0");
     
+    /**
+     * The following initializes the sound indices.
+     * This allows GTK to find the right sound to play.
+     */
     DSoundClipIndices[sctTick] = DSoundMixer.FindClip("tick");
     DSoundClipIndices[sctTock] = DSoundMixer.FindClip("tock");
     DSoundClipIndices[sctCannon0] = DSoundMixer.FindClip("cannon0");
@@ -3885,7 +4037,10 @@ int CApplicationData::Init(int argc, char *argv[]){
     DSongIndices[stRebuild] = DSoundMixer.FindSong("rebuild");
     DSongIndices[stPlace] = DSoundMixer.FindSong("place");
     
-    
+    /**
+     * The following initializes brick tile indices.
+     * This allows the GTK to find the right brick tile to display.
+     */
     DBrickIndices[bbtTopCenter] = DBrickTileset.FindTile("brick-tc");
     DBrickIndices[bbtTopRight] = DBrickTileset.FindTile("brick-tr");
     DBrickIndices[bbtRight0] = DBrickTileset.FindTile("brick-r0");
@@ -3898,7 +4053,10 @@ int CApplicationData::Init(int argc, char *argv[]){
     DBrickIndices[bbtTopLeft] = DBrickTileset.FindTile("brick-tl");
     DBrickIndices[bbtSingle] = DBrickTileset.FindTile("brick-single");
     
-    
+    /**
+     * The following initializes mortar tile indices.
+     * This allows the GTK to find the right mortar tile to display.
+     */
     DMortarIndices[bmtTopCenter] = DMortarTileset.FindTile("mortar-tc");
     DMortarIndices[bmtTopRight0] = DMortarTileset.FindTile("mortar-tr0");
     DMortarIndices[bmtTopRight1] = DMortarTileset.FindTile("mortar-tr1");
@@ -3928,18 +4086,26 @@ int CApplicationData::Init(int argc, char *argv[]){
     DMortarIndices[bmtLeftTop1] = DMortarTileset.FindTile("mortar-lt1");
     DMortarIndices[bmtLeftTop2] = DMortarTileset.FindTile("mortar-lt2");
     
-    
+    // Opens game maps directory.
     MapDirectory = opendir(MapPath.c_str());
+
+    // Checks if game maps directory opened correctly.
     if(NULL == MapDirectory){
         printf("Failed to open directory.\n");
         return -1;
     }
+
+    // While loop to load all map files
     while((DirectoryEntry = readdir( MapDirectory ))){
         std::string Filename = MapPath + "/";
         Filename += DirectoryEntry->d_name;
         if(Filename.rfind(".map") == (Filename.length() - 4)){
             CTerrainMap TempMap;
             
+            /**
+             * Checks if the map loaded correctly. 
+             * If not, go to next map file.
+             */
             if(!TempMap.LoadMap(&D2DTerrainTileset, &D3DTerrainTileset, Filename)){
                 printf("Failed to load map \"%s\".\n",Filename.c_str());
                 continue;
@@ -3947,22 +4113,35 @@ int CApplicationData::Init(int argc, char *argv[]){
             DTerrainMaps.push_back(TempMap);
         }
     }
+
+    // Close the game maps directory.
     closedir(MapDirectory);
+
+    // If no maps were loaded, exit the app.
     if(0 == DTerrainMaps.size()){
         printf("No maps loaded.\n");
         return 0;
     }
+
+    // Initializes window size scaling to 1.
     DScaling = 1;
     
+    // Loads the main menu.
     LoadTerrainMap(0);
     ChangeMode(gmMainMenu);
     DrawMenu();
     
+    // gdk draw functions for generating window contents.
     gdk_draw_pixmap(DPreviousWorkingBufferPixmap, DDrawingContext, DWorkingBufferPixmap, 0, 0, 0, 0, -1, -1);
     gdk_draw_pixmap(DDoubleBufferPixmap, DDrawingContext, DWorkingBufferPixmap, 0, 0, 0, 0, -1, -1);
     gdk_draw_pixmap(DDrawingArea->window, DDrawingContext, DDoubleBufferPixmap, 0, 0, 0, 0, -1, -1);
 
-    
+    /**
+     * Sets up the amount of time to wait before recalling timeoutCallBack.
+     *
+     * See https://developer.gnome.org/glib/stable/glib-The-Main-Event-Loop.html#g-timeout-add
+     * for more documentation.
+     */
     gettimeofday(&DNextExpectedTimeout, NULL);
     DNextExpectedTimeout.tv_usec += TIMEOUT_INTERVAL * 1000;
     if(1000000 <= DNextExpectedTimeout.tv_usec){
@@ -3970,14 +4149,19 @@ int CApplicationData::Init(int argc, char *argv[]){
         DNextExpectedTimeout.tv_sec++;
     }
     g_timeout_add(TIMEOUT_INTERVAL, TimeoutCallback, this);
-    // All GTK applications must have a gtk_main(). Control ends here and waits 
-    // for an event to occur (like a key press or mouse event). 
+
+    /**
+     * All GTK applications must have a gtk_main(). Control ends here and waits 
+     * for an event to occur (like a key press or mouse event). 
+     */
     gtk_main ();
     return 0;
 }
 
 
 int main(int argc, char *argv[]){
+
+    // Create app object.
     CApplicationData MainData;
     int ReturnValue;
 
@@ -3992,6 +4176,7 @@ int main(int argc, char *argv[]){
     printf("distribution for educational purposes only and this copyright notice does not\n"); 
     printf("attempt to claim any ownership of this material.\n");
     
+    // Initializes and runs the app.
     ReturnValue = MainData.Init(argc, argv);
 
     return ReturnValue;
