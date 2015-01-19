@@ -79,3 +79,10 @@ To build docs, run `doxygen` or `./doxygen_and_open.sh`
 ## Coding Convention
 
 See the [coding convention document](coding_convention.md)
+
+## Network
+
+    - For files with dependencies on the ZeroMQ library, add '-lzmq' when building.
+    - The server must be running before the game.
+
+
