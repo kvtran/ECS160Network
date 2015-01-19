@@ -13,6 +13,9 @@
     attempt to claim any ownership of this material.
 */
 
+#include <iostream>
+#include <string>
+
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,6 +32,8 @@
 #include "WallShape.h"
 #include "SoundLibraryMixer.h"
 #include "RandomNumberGenerator.h"
+
+#include "zmq.hpp"
 
 #define INITIAL_MAP_WIDTH       480
 #define INITIAL_MAP_HEIGHT      288
@@ -78,6 +83,7 @@ class CApplicationData{
             gmSelectMap,
             gmOptionsMenu,
             gmSoundOptions,
+            gmNetworkOptions,        
             gmTransitionSelectCastle,
             gmSelectCastle,
             gmTransitionRebuild,
@@ -537,6 +543,7 @@ class CApplicationData{
         void DrawMenu();
         void DrawSelectMap();
         void DrawSoundOptions();
+        void DrawNetworkOptions();
         void Draw2DFrame();
         void Draw3DFrame();
         void DrawBanner(const std::string &message);
@@ -551,6 +558,7 @@ class CApplicationData{
         void SelectMapMode();
         void OptionsMenuMode();
         void SoundOptionsMode();
+        void NetworkOptionsMode();
         void SelectCastleMode();
         void CannonPlacementMode();
         void RebuildMode();
@@ -576,6 +584,8 @@ class CApplicationData{
         void LoadTerrainMap(int index);
         void ResetMap();
         void ResizeCanvases();
+        
+        void Echo();
         
         
     public:
@@ -707,6 +717,11 @@ gboolean CApplicationData::Timeout(){
         case gmSoundOptions:                SoundOptionsMode();
                                             DrawSoundOptions();
                                             break;
+        case gmNetworkOptions:              NetworkOptionsMode();
+                                            DrawNetworkOptions();
+                                            Echo();
+                                            exit(1);
+                                            break; 
         case gmSelectCastle:                SelectCastleAI();
                                             SelectCastleMode();
                                             Draw2DFrame();
@@ -1067,6 +1082,19 @@ void CApplicationData::DrawSoundOptions(){
         DBlackFont.DrawText(DWorkingBufferPixmap, DDrawingContext, TextX, TextY, TempString);
     }
 }
+
+void CApplicationData::DrawNetworkOptions(){
+    gint TextX, TextY, TextWidth, TextHeight, MaxWidth, MaxHeight;
+    gint RequiredWidth, RequiredHeight; 
+    std::string TempString;
+    std::vector< std::string > TempItems = DMenuItems;
+    
+    TempString = DMenuTitle;
+    DMenuTitle = "TCP Proof of Concept";
+    DMenuItems.clear();
+    DrawMenu();
+}
+
 
 /**
  * Draws the map selection menu.
@@ -2018,7 +2046,7 @@ void CApplicationData::OptionsMenuMode(){
             ChangeMode(gmSoundOptions);  // Changes mode to sound options 
         }
         else if(1 == DSelectedMenuItem){
-
+            ChangeMode(gmNetworkOptions); // Changes mode to network options
         }
         else{
             ChangeMode(gmMainMenu);   // Changes to the main menu 
@@ -2076,6 +2104,42 @@ void CApplicationData::SoundOptionsMode(){
         DSoundMixer.PlayClip(DSoundClipIndices[sctTick], DSoundEffectVolume, 0.0);
     }
     DLastSelectedMenuItem = DSelectedMenuItem;
+}
+
+void CApplicationData::NetworkOptionsMode(){
+}
+
+void CApplicationData::Echo(){
+        
+    // TODO: Configure Makefile so that it links with the ZeroMQ Library
+    
+    zmq::context_t context(1);
+    zmq::socket_t socket(context, ZMQ_REQ);
+    
+    std::cout << "Attempting to connect to server... " << std::endl;
+    
+    try {
+        socket.connect("tcp://localhost:160");
+        std::cout << "Connected to localhost port number 160" << std::endl;
+        
+        zmq::message_t request (5);
+        memcpy((void *) request.data(), "Hello", 5);
+        
+        std::cout << "Sending data" << std::endl;
+        socket.send(request);
+        std::cout << "Data sent" << std::endl;
+        
+        zmq::message_t reply;
+        socket.recv(&reply);
+        std::istringstream iss(static_cast<char*>(reply.data()));
+        
+        std::cout << "Data received: " << iss.str() << std::endl;
+    }
+    
+    catch (const std::exception& e) {
+        std:: cout << e.what() << std::endl;
+    }
+    
 }
 
 void CApplicationData::SelectCastleMode(){

@@ -84,7 +84,7 @@ find_package(GTK2)
 find_library(PORTAUDIO portaudio)
 find_library(FLUIDSYNTH fluidsynth)
 find_library(SNDFILE sndfile)
-find_library(ZMQ zmq)
+find_library(ZMQ)
 
 include_directories(${GTK2_INCLUDE_DIRS})
 
